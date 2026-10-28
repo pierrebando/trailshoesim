@@ -1,0 +1,664 @@
+{
+  "id": "example-brand-fictional-trail-1",
+  "brand": "Example Brand",
+  "model": "Fictional Trail",
+  "version": "1",
+  "category": "trail",
+  "newer_version_id": null,
+  "gender_variants": [
+    "men",
+    "women"
+  ],
+  "release_year": {
+    "value": null,
+    "missing_reason": "FICTIONAL TEST DATA: not a real shoe"
+  },
+  "retail": [
+    {
+      "retailer": "le_pape",
+      "url": "https://example.com/le-pape/fictional-trail-1",
+      "price_eur": 149.9,
+      "price_date": "2026-10-20",
+      "rating": 4.6,
+      "review_count": 200
+    },
+    {
+      "retailer": "irun",
+      "url": "https://example.com/irun/fictional-trail-1",
+      "price_eur": 139.0,
+      "price_date": "2026-10-21",
+      "rating": null,
+      "review_count": 0
+    }
+  ],
+  "specs": {
+    "weight_g": {
+      "value": 290.0,
+      "source_name": "example.com",
+      "source_url": "https://example.com/specs",
+      "retrieved_at": "2026-10-20",
+      "missing_reason": null,
+      "note": "men's US 9",
+      "raw_snippet": null,
+      "derivation": null
+    },
+    "weight_women_g": {
+      "value": null,
+      "source_name": null,
+      "source_url": null,
+      "retrieved_at": null,
+      "missing_reason": "not listed on manufacturer page",
+      "note": null,
+      "raw_snippet": null,
+      "derivation": null
+    },
+    "stack_heel_mm": {
+      "value": 33.0,
+      "source_name": "example.com",
+      "source_url": "https://example.com/specs",
+      "retrieved_at": "2026-10-20",
+      "missing_reason": null,
+      "note": null,
+      "raw_snippet": null,
+      "derivation": null
+    },
+    "stack_forefoot_mm": {
+      "value": 27.0,
+      "source_name": "example.com",
+      "source_url": "https://example.com/specs",
+      "retrieved_at": "2026-10-20",
+      "missing_reason": null,
+      "note": null,
+      "raw_snippet": null,
+      "derivation": null
+    },
+    "drop_mm": {
+      "value": 6.0,
+      "source_name": "derived from stack heights",
+      "source_url": "https://example.com/specs",
+      "retrieved_at": "2026-10-20",
+      "missing_reason": null,
+      "note": null,
+      "raw_snippet": null,
+      "derivation": null
+    },
+    "lug_depth_mm": {
+      "value": 4.5,
+      "source_name": "example.com",
+      "source_url": "https://example.com/specs",
+      "retrieved_at": "2026-10-20",
+      "missing_reason": null,
+      "note": null,
+      "raw_snippet": null,
+      "derivation": null
+    },
+    "lug_spacing": {
+      "value": null,
+      "source_name": null,
+      "source_url": null,
+      "retrieved_at": null,
+      "missing_reason": "not published by manufacturer",
+      "note": null,
+      "raw_snippet": null,
+      "derivation": null
+    },
+    "platform_width_heel_mm": {
+      "value": null,
+      "source_name": null,
+      "source_url": null,
+      "retrieved_at": null,
+      "missing_reason": "not published by manufacturer",
+      "note": null,
+      "raw_snippet": null,
+      "derivation": null
+    },
+    "platform_width_forefoot_mm": {
+      "value": null,
+      "source_name": null,
+      "source_url": null,
+      "retrieved_at": null,
+      "missing_reason": "not published by manufacturer",
+      "note": null,
+      "raw_snippet": null,
+      "derivation": null
+    },
+    "midsole_foam": {
+      "value": "supercritical EVA",
+      "source_name": "example.com",
+      "source_url": "https://example.com/specs",
+      "retrieved_at": "2026-10-20",
+      "missing_reason": null,
+      "note": null,
+      "raw_snippet": null,
+      "derivation": null
+    },
+    "plate": {
+      "value": "rock_plate",
+      "source_name": "example.com",
+      "source_url": "https://example.com/specs",
+      "retrieved_at": "2026-10-20",
+      "missing_reason": null,
+      "note": null,
+      "raw_snippet": null,
+      "derivation": null
+    },
+    "outsole_rubber": {
+      "value": "Vibram Megagrip",
+      "source_name": "example.com",
+      "source_url": "https://example.com/specs",
+      "retrieved_at": "2026-10-20",
+      "missing_reason": null,
+      "note": null,
+      "raw_snippet": null,
+      "derivation": null
+    },
+    "waterproof": {
+      "value": false,
+      "source_name": "example.com",
+      "source_url": "https://example.com/specs",
+      "retrieved_at": "2026-10-20",
+      "missing_reason": null,
+      "note": null,
+      "raw_snippet": null,
+      "derivation": null
+    },
+    "upper_notes": {
+      "value": "engineered mesh, reinforced toe cap",
+      "source_name": "example.com",
+      "source_url": "https://example.com/specs",
+      "retrieved_at": "2026-10-20",
+      "missing_reason": null,
+      "note": null,
+      "raw_snippet": null,
+      "derivation": null
+    },
+    "width_options": {
+      "value": [
+        "standard",
+        "wide"
+      ],
+      "source_name": "example.com",
+      "source_url": "https://example.com/specs",
+      "retrieved_at": "2026-10-20",
+      "missing_reason": null,
+      "note": null,
+      "raw_snippet": null,
+      "derivation": null
+    },
+    "sources": {
+      "weight_g": "manufacturer",
+      "stack_heel_mm": "manufacturer",
+      "stack_forefoot_mm": "manufacturer",
+      "drop_mm": "manufacturer",
+      "lug_depth_mm": "manufacturer",
+      "midsole_foam": "manufacturer",
+      "plate": "manufacturer",
+      "outsole_rubber": "manufacturer",
+      "waterproof": "manufacturer",
+      "upper_notes": "manufacturer",
+      "width_options": "manufacturer"
+    }
+  },
+  "expert_reviews": [
+    {
+      "source": "Example Review Site",
+      "url": "https://example.com/review/fictional-trail-1",
+      "date": "2026-09-01",
+      "retrieved_at": "2026-10-20",
+      "language": "en",
+      "conclusion_excerpt": "A protective, well-cushioned shoe for long technical days.",
+      "aspects": {
+        "cushioning": {
+          "score_0_10": 8.0,
+          "evidence_excerpt": "Plenty of cushioning for long days.",
+          "mention_count": 3
+        },
+        "grip": {
+          "score_0_10": 9.0,
+          "evidence_excerpt": "Excellent bite on wet rock.",
+          "mention_count": 2
+        }
+      },
+      "nlp_model": "example/fictional-model"
+    }
+  ],
+  "buyer_rating": {
+    "review_count_total": 200,
+    "raw_mean_0_5": 4.6,
+    "bayesian_mean_0_5": 4.57,
+    "prior_mean_0_5": 4.3,
+    "prior_strength": 20
+  },
+  "criteria_scores": {
+    "cushioning": {
+      "score_0_10": 6.79,
+      "spec_score_0_10": 6.53,
+      "expert_score_0_10": 8.0,
+      "spec_input_coverage": 1.0,
+      "expert_review_count": 1,
+      "inputs_used": [
+        "specs.stack_heel_mm",
+        "specs.stack_forefoot_mm",
+        "specs.midsole_foam",
+        "expert_reviews"
+      ],
+      "inputs_missing": [],
+      "provenance": [
+        {
+          "input": "specs.stack_heel_mm",
+          "source": "manufacturer",
+          "value": "33",
+          "input_score_0_10": 6.2,
+          "weight": 0.37
+        },
+        {
+          "input": "specs.stack_forefoot_mm",
+          "source": "manufacturer",
+          "value": "27",
+          "input_score_0_10": 6.2,
+          "weight": 0.25
+        },
+        {
+          "input": "specs.midsole_foam",
+          "source": "manufacturer",
+          "value": "supercritical EVA (supercritical_or_gas_infused)",
+          "input_score_0_10": 7.5,
+          "weight": 0.2
+        },
+        {
+          "input": "expert_reviews",
+          "source": "expert_reviews",
+          "value": "1 review",
+          "input_score_0_10": 8.0,
+          "weight": 0.18
+        }
+      ]
+    },
+    "protection": {
+      "score_0_10": 8.23,
+      "spec_score_0_10": 8.23,
+      "expert_score_0_10": null,
+      "spec_input_coverage": 1.0,
+      "expert_review_count": 0,
+      "inputs_used": [
+        "specs.plate",
+        "specs.stack_forefoot_mm"
+      ],
+      "inputs_missing": [
+        "expert_reviews"
+      ],
+      "provenance": [
+        {
+          "input": "specs.plate",
+          "source": "manufacturer",
+          "value": "rock_plate",
+          "input_score_0_10": 9.0,
+          "weight": 0.55
+        },
+        {
+          "input": "specs.stack_forefoot_mm",
+          "source": "manufacturer",
+          "value": "27",
+          "input_score_0_10": 7.3,
+          "weight": 0.45
+        }
+      ]
+    },
+    "grip": {
+      "score_0_10": 8.81,
+      "spec_score_0_10": 8.75,
+      "expert_score_0_10": 9.0,
+      "spec_input_coverage": 0.9,
+      "expert_review_count": 1,
+      "inputs_used": [
+        "specs.outsole_rubber",
+        "specs.lug_depth_mm",
+        "expert_reviews"
+      ],
+      "inputs_missing": [
+        "specs.lug_spacing"
+      ],
+      "provenance": [
+        {
+          "input": "specs.outsole_rubber",
+          "source": "manufacturer",
+          "value": "Vibram Megagrip (premium_sticky)",
+          "input_score_0_10": 9.0,
+          "weight": 0.38
+        },
+        {
+          "input": "specs.lug_depth_mm",
+          "source": "manufacturer",
+          "value": "4.5",
+          "input_score_0_10": 8.5,
+          "weight": 0.38
+        },
+        {
+          "input": "expert_reviews",
+          "source": "expert_reviews",
+          "value": "1 review",
+          "input_score_0_10": 9.0,
+          "weight": 0.25
+        }
+      ]
+    },
+    "stability": {
+      "score_0_10": 5.6,
+      "spec_score_0_10": 5.6,
+      "expert_score_0_10": null,
+      "spec_input_coverage": 0.6,
+      "expert_review_count": 0,
+      "inputs_used": [
+        "specs.stack_heel_mm"
+      ],
+      "inputs_missing": [
+        "specs.platform_width_forefoot_mm",
+        "specs.platform_width_heel_mm",
+        "expert_reviews"
+      ],
+      "provenance": [
+        {
+          "input": "specs.stack_heel_mm",
+          "source": "manufacturer",
+          "value": "33",
+          "input_score_0_10": 5.6,
+          "weight": 1.0
+        }
+      ]
+    },
+    "responsiveness": {
+      "score_0_10": 7.1,
+      "spec_score_0_10": 7.1,
+      "expert_score_0_10": null,
+      "spec_input_coverage": 1.0,
+      "expert_review_count": 0,
+      "inputs_used": [
+        "specs.midsole_foam",
+        "specs.plate"
+      ],
+      "inputs_missing": [
+        "expert_reviews"
+      ],
+      "provenance": [
+        {
+          "input": "specs.midsole_foam",
+          "source": "manufacturer",
+          "value": "supercritical EVA (supercritical_or_gas_infused)",
+          "input_score_0_10": 8.0,
+          "weight": 0.7
+        },
+        {
+          "input": "specs.plate",
+          "source": "manufacturer",
+          "value": "rock_plate",
+          "input_score_0_10": 5.0,
+          "weight": 0.3
+        }
+      ]
+    },
+    "lightness": {
+      "score_0_10": 5.5,
+      "spec_score_0_10": 5.5,
+      "expert_score_0_10": null,
+      "spec_input_coverage": 1.0,
+      "expert_review_count": 0,
+      "inputs_used": [
+        "specs.weight_g"
+      ],
+      "inputs_missing": [
+        "expert_reviews"
+      ],
+      "provenance": [
+        {
+          "input": "specs.weight_g",
+          "source": "manufacturer",
+          "value": "290",
+          "input_score_0_10": 5.5,
+          "weight": 1.0
+        }
+      ]
+    },
+    "durability": {
+      "score_0_10": 6.5,
+      "spec_score_0_10": 6.5,
+      "expert_score_0_10": null,
+      "spec_input_coverage": 1.0,
+      "expert_review_count": 0,
+      "inputs_used": [
+        "specs.outsole_rubber",
+        "specs.midsole_foam"
+      ],
+      "inputs_missing": [
+        "expert_reviews"
+      ],
+      "provenance": [
+        {
+          "input": "specs.outsole_rubber",
+          "source": "manufacturer",
+          "value": "Vibram Megagrip (premium_sticky)",
+          "input_score_0_10": 6.5,
+          "weight": 0.6
+        },
+        {
+          "input": "specs.midsole_foam",
+          "source": "manufacturer",
+          "value": "supercritical EVA (supercritical_or_gas_infused)",
+          "input_score_0_10": 6.5,
+          "weight": 0.4
+        }
+      ]
+    },
+    "fit_width": {
+      "score_0_10": 7.0,
+      "spec_score_0_10": 7.0,
+      "expert_score_0_10": null,
+      "spec_input_coverage": 1.0,
+      "expert_review_count": 0,
+      "inputs_used": [
+        "specs.width_options"
+      ],
+      "inputs_missing": [
+        "expert_reviews"
+      ],
+      "provenance": [
+        {
+          "input": "specs.width_options",
+          "source": "manufacturer",
+          "value": "2 (standard, wide)",
+          "input_score_0_10": 7.0,
+          "weight": 1.0
+        }
+      ]
+    }
+  },
+  "terrain_scores": {
+    "road_to_trail": {
+      "score_0_10": 5.84,
+      "inputs_used": [
+        "specs.lug_depth_mm",
+        "specs.outsole_rubber",
+        "specs.stack_heel_mm"
+      ],
+      "inputs_missing": [
+        "specs.lug_spacing"
+      ],
+      "provenance": [
+        {
+          "input": "specs.lug_depth_mm",
+          "source": "manufacturer",
+          "value": "4.5",
+          "input_score_0_10": 4.5,
+          "weight": 0.65
+        },
+        {
+          "input": "specs.outsole_rubber",
+          "source": "manufacturer",
+          "value": "Vibram Megagrip (premium_sticky)",
+          "input_score_0_10": 9.0,
+          "weight": 0.18
+        },
+        {
+          "input": "specs.stack_heel_mm",
+          "source": "manufacturer",
+          "value": "33",
+          "input_score_0_10": 7.6,
+          "weight": 0.18
+        }
+      ]
+    },
+    "groomed_mixed": {
+      "score_0_10": 8.44,
+      "inputs_used": [
+        "specs.lug_depth_mm",
+        "specs.outsole_rubber",
+        "specs.plate",
+        "specs.stack_heel_mm"
+      ],
+      "inputs_missing": [
+        "specs.lug_spacing"
+      ],
+      "provenance": [
+        {
+          "input": "specs.lug_depth_mm",
+          "source": "manufacturer",
+          "value": "4.5",
+          "input_score_0_10": 8.25,
+          "weight": 0.56
+        },
+        {
+          "input": "specs.outsole_rubber",
+          "source": "manufacturer",
+          "value": "Vibram Megagrip (premium_sticky)",
+          "input_score_0_10": 9.0,
+          "weight": 0.28
+        },
+        {
+          "input": "specs.plate",
+          "source": "manufacturer",
+          "value": "rock_plate",
+          "input_score_0_10": 9.0,
+          "weight": 0.06
+        },
+        {
+          "input": "specs.stack_heel_mm",
+          "source": "manufacturer",
+          "value": "33",
+          "input_score_0_10": 7.7,
+          "weight": 0.11
+        }
+      ]
+    },
+    "technical_rocky": {
+      "score_0_10": 8.83,
+      "inputs_used": [
+        "specs.lug_depth_mm",
+        "specs.outsole_rubber",
+        "specs.plate",
+        "specs.stack_heel_mm"
+      ],
+      "inputs_missing": [
+        "specs.lug_spacing"
+      ],
+      "provenance": [
+        {
+          "input": "specs.lug_depth_mm",
+          "source": "manufacturer",
+          "value": "4.5",
+          "input_score_0_10": 10.0,
+          "weight": 0.37
+        },
+        {
+          "input": "specs.outsole_rubber",
+          "source": "manufacturer",
+          "value": "Vibram Megagrip (premium_sticky)",
+          "input_score_0_10": 9.0,
+          "weight": 0.26
+        },
+        {
+          "input": "specs.plate",
+          "source": "manufacturer",
+          "value": "rock_plate",
+          "input_score_0_10": 9.0,
+          "weight": 0.21
+        },
+        {
+          "input": "specs.stack_heel_mm",
+          "source": "manufacturer",
+          "value": "33",
+          "input_score_0_10": 5.6,
+          "weight": 0.16
+        }
+      ]
+    },
+    "muddy_soft": {
+      "score_0_10": 7.43,
+      "inputs_used": [
+        "specs.lug_depth_mm",
+        "specs.outsole_rubber"
+      ],
+      "inputs_missing": [
+        "specs.lug_spacing"
+      ],
+      "provenance": [
+        {
+          "input": "specs.lug_depth_mm",
+          "source": "manufacturer",
+          "value": "4.5",
+          "input_score_0_10": 7.0,
+          "weight": 0.79
+        },
+        {
+          "input": "specs.outsole_rubber",
+          "source": "manufacturer",
+          "value": "Vibram Megagrip (premium_sticky)",
+          "input_score_0_10": 9.0,
+          "weight": 0.21
+        }
+      ]
+    },
+    "wet_roots": {
+      "score_0_10": 8.72,
+      "inputs_used": [
+        "specs.lug_depth_mm",
+        "specs.outsole_rubber",
+        "specs.stack_heel_mm"
+      ],
+      "inputs_missing": [
+        "specs.lug_spacing"
+      ],
+      "provenance": [
+        {
+          "input": "specs.lug_depth_mm",
+          "source": "manufacturer",
+          "value": "4.5",
+          "input_score_0_10": 9.25,
+          "weight": 0.32
+        },
+        {
+          "input": "specs.outsole_rubber",
+          "source": "manufacturer",
+          "value": "Vibram Megagrip (premium_sticky)",
+          "input_score_0_10": 9.0,
+          "weight": 0.58
+        },
+        {
+          "input": "specs.stack_heel_mm",
+          "source": "manufacturer",
+          "value": "33",
+          "input_score_0_10": 5.6,
+          "weight": 0.11
+        }
+      ]
+    }
+  },
+  "confidence": {
+    "spec_completeness_0_1": 0.97,
+    "expert_review_count": 1,
+    "buyer_review_count": 200,
+    "price_age_days": 0,
+    "level": "medium",
+    "reasons": [
+      "1 expert review (high needs 2)"
+    ]
+  }
+}

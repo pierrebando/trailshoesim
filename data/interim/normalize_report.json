@@ -1,0 +1,173 @@
+{
+ "listings_in": 1228,
+ "dropped": {
+  "kids": 30
+ },
+ "listings_used": 1198,
+ "models_out": 220,
+ "models_exact": 220,
+ "models_fuzzy": 0,
+ "fuzzy_merges_applied": 0,
+ "review_rows_by_reason": {
+  "possible_duplicate": 19,
+  "version_unknown": 8,
+  "product_code_in_title": 1
+ },
+ "decisions_applied": 0,
+ "most_uncertain_matches": [
+  {
+   "score": 90.3,
+   "merged": false,
+   "keys": [
+    "under armour|charged bandit tr|3",
+    "under armour|charged bandit|3"
+   ]
+  },
+  {
+   "score": 88.0,
+   "merged": false,
+   "keys": [
+    "scott|kinabalu tr|",
+    "scott|kinabalu ultra|"
+   ]
+  },
+  {
+   "score": 87.5,
+   "merged": false,
+   "keys": [
+    "new balance|tektrel s|",
+    "new balance|tektrel|"
+   ]
+  },
+  {
+   "score": 87.0,
+   "merged": false,
+   "keys": [
+    "mizuno|wave rider tt|3",
+    "mizuno|wave rider|3"
+   ]
+  },
+  {
+   "score": 87.0,
+   "merged": false,
+   "keys": [
+    "scott|kinabalu mtn|",
+    "scott|kinabalu tr|"
+   ]
+  },
+  {
+   "score": 85.7,
+   "merged": false,
+   "keys": [
+    "scott|supertrac rc|3",
+    "scott|supertrac|3"
+   ]
+  },
+  {
+   "score": 85.7,
+   "merged": false,
+   "keys": [
+    "joma|sierra barefoot|",
+    "joma|sima barefoot|"
+   ]
+  },
+  {
+   "score": 85.7,
+   "merged": false,
+   "keys": [
+    "puma|flare pro tr|",
+    "puma|flare pro|"
+   ]
+  },
+  {
+   "score": 83.9,
+   "merged": false,
+   "keys": [
+    "scarpa|golden gate 2 atr|",
+    "scarpa|golden gate lt|"
+   ]
+  },
+  {
+   "score": 82.4,
+   "merged": false,
+   "keys": [
+    "adidas|agravic sl|",
+    "adidas|agravic|"
+   ]
+  },
+  {
+   "score": 82.4,
+   "merged": false,
+   "keys": [
+    "adidas|agravic tt|",
+    "adidas|agravic|"
+   ]
+  },
+  {
+   "score": 81.8,
+   "merged": false,
+   "keys": [
+    "adidas|agravic lite|",
+    "adidas|agravic sl|"
+   ]
+  },
+  {
+   "score": 81.8,
+   "merged": false,
+   "keys": [
+    "adidas|agravic lite|",
+    "adidas|agravic tt|"
+   ]
+  },
+  {
+   "score": 81.5,
+   "merged": false,
+   "keys": [
+    "adidas|tracefinder plus|",
+    "adidas|tracefinder|"
+   ]
+  },
+  {
+   "score": 81.2,
+   "merged": false,
+   "keys": [
+    "adidas|agravic speed ultra|2",
+    "adidas|agravic speed|2"
+   ]
+  }
+ ],
+ "brands": {
+  "La Sportiva": 19,
+  "Altra": 16,
+  "Asics": 16,
+  "adidas": 15,
+  "Merrell": 15,
+  "Joma": 14,
+  "Mizuno": 13,
+  "New Balance": 10,
+  "Salomon": 9,
+  "Vibram FiveFingers": 9,
+  "Craft": 8,
+  "Puma": 8,
+  "Saucony": 8,
+  "Scott": 8,
+  "Brooks": 7,
+  "Scarpa": 7,
+  "Under Armour": 7,
+  "NNormal": 6,
+  "Rossignol": 5,
+  "Dynafit": 4,
+  "Inov-8": 4,
+  "Lowa": 4,
+  "Millet": 3,
+  "Tecnica": 3,
+  "VEJA": 2
+ },
+ "models_by_retailer_count": {
+  "1": 186,
+  "2": 34
+ },
+ "old_versions_on_sale": 24,
+ "discounted_old_versions": 19,
+ "prior_mean_0_5": 4.956
+}

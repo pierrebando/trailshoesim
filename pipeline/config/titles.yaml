@@ -1,0 +1,66 @@
+# Title vocabulary and matching thresholds (phase 2).
+#
+# Patterns are Python regular expressions, applied case-insensitively to the title
+# after accents are removed (so write "impermeable", not "imperméable"). They are
+# applied in the order written, so longer phrases come first.
+
+# Product type found in the title. "kids" listings are excluded from the catalogue.
+categories:
+  kids: ["pour enfants?", "\\benfants?\\b", "\\bjuniors?\\b", "\\bkids?\\b", "\\bjr\\b"]
+  gravel: ["pour gravier", "\\bgravel\\b"]
+
+# Retailer gender labels that mean a kids' shoe (Tradeinn: "Garçon"). Compared folded.
+kids_gender_labels: [garcon, fille, enfant, enfants, junior, kids, boy, boys, girl, girls]
+
+# Generic words that say "this is a shoe" but are not part of the model name.
+generic_phrases:
+  - "chaussures? de trail running"
+  - "chaussures? de trail"
+  - "chaussures? de running"
+  - "chaussures? de course"
+  - "trail running shoes?"
+  - "trail shoes?"
+  - "running shoes?"
+  - "\\bchaussures?\\b"
+  - "\\bshoes?\\b"
+
+# Variant flags: same model line, different version of the product.
+# extra_wide must come before wide, so "extra larges" is not read as "larges".
+variants:
+  gore_tex: ["gore[- ]?tex", "\\bgtx\\b"]
+  waterproof: ["\\bwp\\b", "\\bwpf\\b", "waterproof", "impermeables?", "\\bptx\\b", "rain\\.?rdy", "climaproof", "\\bh2o\\b"]
+  extra_wide: ["extra[- ]larges?", "extra[- ]wide", "\\b4e\\b"]
+  wide: ["\\blarges?\\b", "\\bwide\\b", "\\b2e\\b"]
+  mid: ["\\bmid\\b"]
+  boa: ["\\bboa\\b"]
+  leather: ["\\bltr\\b", "\\bleather\\b", "\\bcuir\\b"]
+  insulated: ["primaloft"]
+  refurbished: ["reconditionnee?s?", "refurbished"]
+
+# Glisshop model names end with short gender markers ("Xplor 2 W", "Pyrox Hybrid Ms").
+genders:
+  men: ["\\bhommes?\\b", "\\bmen'?s?\\b", "\\bmens\\b", "\\bmasculin\\b", "\\bman\\b", "\\bms\\b", "\\bm's\\b", "\\bm\\b"]
+  women: ["\\bwmns?\\b", "\\bwoman\\b", "\\bws\\b", "\\bw's\\b", "\\bw\\b", "\\bfemmes?\\b", "\\bwomen'?s?\\b", "\\bwomens\\b", "\\bdames?\\b", "\\bfeminin\\b"]
+  unisex: ["\\bunisexe?\\b"]
+
+# Colour words are removed only at the END of a title or after " - ", because some
+# model names contain colour words ("Mont Blanc").
+colours: [noir, blanc, bleu, rouge, vert, gris, jaune, orange, rose, violet, marron, beige,
+          kaki, multicolore, black, white, blue, red, green, grey, gray, yellow, pink,
+          purple, brown, navy, khaki, multicolor, multi]
+# Two-word names that end with a colour word and must keep it.
+protected_phrases: ["mont blanc", "black diamond"]
+
+# Synonyms for the last word of a model name ("Charged Bandit Trail 3" = "TR 3").
+token_synonyms:
+  trail: tr
+
+# Tokens that may follow the version number ("Gel-Nimbus 28 TR").
+version_suffix_tokens: [tr, trail]
+
+matching:
+  # rapidfuzz.fuzz.ratio between model names of the same brand and version.
+  fuzzy_merge_threshold: 92     # at or above: merged automatically (match_confidence = fuzzy)
+  fuzzy_review_threshold: 80    # between the two: NOT merged, written to needs_review.csv
+  # Tokens with letters and digits this long are product codes, not model words.
+  sku_min_length: 7

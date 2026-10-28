@@ -1,0 +1,51 @@
+# HAND-WRITTEN check set for phase 5 (written for this project, not taken from reviews).
+# criterion: null = the sentence talks about none of the 8 criteria.
+# Used by tests/test_nlp.py and to calibrate the thresholds of aspects.yaml.
+- {text: "The midsole is soft and plush, my legs felt fresh after 50 km.", criterion: cushioning, pole: high}
+- {text: "It feels firm and you feel every rock through the thin sole.", criterion: cushioning, pole: low}
+- {text: "La semelle est très amortie et confortable sur longue distance.", criterion: cushioning, pole: high}
+- {text: "L'amorti est ferme, on ressent bien le sol.", criterion: cushioning, pole: low}
+- {text: "The rock plate kept sharp stones from bruising my feet.", criterion: protection, pole: high}
+- {text: "On rocky trails I could feel every pointy rock underfoot.", criterion: protection, pole: low}
+- {text: "Le pare-pierre protège très bien les orteils.", criterion: protection, pole: high}
+- {text: "Elle protège peu des cailloux pointus.", criterion: protection, pole: low}
+- {text: "Grip on wet granite was outstanding.", criterion: grip, pole: high}
+- {text: "I slipped several times on muddy descents.", criterion: grip, pole: low}
+- {text: "L'accroche sur le rocher mouillé est excellente.", criterion: grip, pole: high}
+- {text: "Elle glisse sur les racines humides.", criterion: grip, pole: low}
+- {text: "Very stable even on technical, off-camber terrain.", criterion: stability, pole: high}
+- {text: "The tall stack made me roll my ankle twice.", criterion: stability, pole: low}
+- {text: "Le pied est parfaitement maintenu dans les descentes.", criterion: stability, pole: high}
+- {text: "Elle manque de stabilité dans les descentes techniques.", criterion: stability, pole: low}
+- {text: "The foam is bouncy and gives great energy return when you push the pace.", criterion: responsiveness, pole: high}
+- {text: "The ride feels flat and dead, with no pop at all.", criterion: responsiveness, pole: low}
+- {text: "Une chaussure très dynamique et réactive.", criterion: responsiveness, pole: high}
+- {text: "La mousse est molle et manque de rebond.", criterion: responsiveness, pole: low}
+- {text: "At 240 g it is one of the lightest trail shoes around.", criterion: lightness, pole: high}
+- {text: "It is a heavy, clunky shoe.", criterion: lightness, pole: low}
+- {text: "Une chaussure légère qui se fait oublier.", criterion: lightness, pole: high}
+- {text: "Elle est un peu lourde pour courir vite.", criterion: lightness, pole: low}
+- {text: "After 600 km the outsole barely shows any wear.", criterion: durability, pole: high}
+- {text: "The upper ripped near the toe after only 100 km.", criterion: durability, pole: low}
+- {text: "Après 500 km, elle est comme neuve.", criterion: durability, pole: high}
+- {text: "Les crampons se sont usés très vite.", criterion: durability, pole: low}
+- {text: "Wide-footed runners will love the roomy toebox.", criterion: fit_width, pole: high}
+- {text: "The fit is quite narrow in the forefoot.", criterion: fit_width, pole: low}
+- {text: "Le chaussant est large et confortable à l'avant.", criterion: fit_width, pole: high}
+- {text: "Le chaussant est étroit à l'avant-pied.", criterion: fit_width, pole: low}
+- {text: "I bought them on sale for 120 euros.", criterion: null}
+- {text: "The colourway is bright orange with black laces.", criterion: null}
+- {text: "I ran the race with my brother last summer.", criterion: null}
+- {text: "Shipping took three days and the box was nice.", criterion: null}
+- {text: "This is the fifth version of the model since 2019.", criterion: null}
+- {text: "We tested it over two months in the Alps.", criterion: null}
+- {text: "J'ai acheté cette paire en soldes.", criterion: null}
+- {text: "Le coloris rouge est très joli.", criterion: null}
+- {text: "Nous l'avons testée pendant six semaines.", criterion: null}
+- {text: "Le modèle existe aussi en version homme et femme.", criterion: null}
+- {text: "It comes in sizes 7 to 13.", criterion: null}
+- {text: "My training block was focused on vertical gain.", criterion: null}
+- {text: "Overall this is one of my favourite shoes this year.", criterion: null}
+- {text: "C'est l'une de mes chaussures préférées de la saison.", criterion: null}
+- {text: "The laces are a bit too long.", criterion: null}
+- {text: "Le logo est discret sur le côté.", criterion: null}

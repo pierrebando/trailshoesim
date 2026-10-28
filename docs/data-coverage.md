@@ -1,0 +1,154 @@
+# Data coverage — manufacturer specs (phase 3)
+
+Generated 2026-10-28 from `data/interim/specs.json` (`python -m pipeline.specs`).
+
+- Models: **220**
+- Official product page found: **45** (20 %)
+- Percentages are over ALL models; the last column is over models with a page found.
+
+## Fields
+
+| Field | Filled | % of all models | % of models with a page |
+|---|---|---|---|
+| `weight_g` | 25 | 11 % | 56 % |
+| `weight_women_g` | 3 | 1 % | 7 % |
+| `stack_heel_mm` | 16 | 7 % | 36 % |
+| `stack_forefoot_mm` | 16 | 7 % | 36 % |
+| `drop_mm` | 24 | 11 % | 53 % |
+| `lug_depth_mm` | 17 | 8 % | 38 % |
+| `midsole_foam` | 26 | 12 % | 58 % |
+| `midsole_foam_family` | 26 | 12 % | 58 % |
+| `plate` | 3 | 1 % | 7 % |
+| `outsole_rubber` | 26 | 12 % | 58 % |
+| `waterproof` | 0 | 0 % | 0 % |
+| `upper_notes` | 29 | 13 % | 64 % |
+| `width_options` | 4 | 2 % | 9 % |
+| `release_year` | 0 | 0 % | 0 % |
+
+## Retailer fallback (phase 3b, separate from manufacturer data)
+
+Values shown on Tradeinn/Glisshop product pages (`retailer_fallback`). Phase 6 uses
+manufacturer data first, then lab measurements, then these, with lower confidence.
+
+| Field | Manufacturer | Retailer fallback | Either source |
+|---|---|---|---|
+| `weight_g` | 25 (11 %) | 57 (26 %) | 75 (34 %) |
+| `weight_women_g` | 3 (1 %) | 60 (27 %) | 61 (28 %) |
+| `drop_mm` | 24 (11 %) | 96 (44 %) | 114 (52 %) |
+| `lug_depth_mm` | 17 (8 %) | 47 (21 %) | 56 (25 %) |
+| `midsole_foam` | 26 (12 %) | 98 (45 %) | 117 (53 %) |
+| `outsole_rubber` | 26 (12 %) | 141 (64 %) | 154 (70 %) |
+| `plate` | 3 (1 %) | 35 (16 %) | 36 (16 %) |
+| `waterproof` | 0 (0 %) | 16 (7 %) | 16 (7 %) |
+
+| Retailer-only field | Filled |
+|---|---|
+| `sole_height_unlabelled_mm` | 28 (13 %) |
+| `drop_range` | 53 (24 %) |
+| `weight_range` | 52 (24 %) |
+| `tags.fit_width` (shop classification) | 217 (99 %) |
+| `tags.terrain` (shop classification) | 138 (63 %) |
+| `tags.cushioning_level` (shop classification) | 22 (10 %) |
+| `tags.runner_build` (shop classification) | 94 (43 %) |
+| `tags.distance` (shop classification) | 94 (43 %) |
+| `tags.pronation` (shop classification) | 94 (43 %) |
+
+## Brands
+
+| Brand | Models | Page found | Why not |
+|---|---|---|---|
+| La Sportiva | 19 | 0 | manufacturer site not collected: robots.txt itself answers HTTP 403 (bot protection) (19) |
+| Altra | 16 | 0 | manufacturer site not collected: Akamai bot protection (HTTP 403 on robots.txt) (16) |
+| Asics | 16 | 0 | manufacturer site not collected: Akamai bot protection (HTTP 403 on every page) (16) |
+| Merrell | 15 | 12 | no matching product page in the manufacturer sitemap (3) |
+| adidas | 15 | 0 | manufacturer site not collected: Akamai bot protection (HTTP 403 on robots.txt) (15) |
+| Joma | 14 | 0 | manufacturer site not collected: robots.txt disallows scripted clients (Python-requests, curl, Python-urllib) (14) |
+| Mizuno | 13 | 8 | no matching product page in the manufacturer sitemap (5) |
+| New Balance | 10 | 0 | manufacturer site not collected: HTTP 403 error page on every request (10) |
+| Salomon | 9 | 0 | manufacturer site not collected: PerimeterX bot protection ('Access to this page has been denied') (9) |
+| Vibram FiveFingers | 9 | 0 | manufacturer site not collected: terms page behind a Cloudflare challenge: terms could not be checked (9) |
+| Craft | 8 | 0 | manufacturer site not collected: robots.txt disallows ClaudeBot and anthropic-ai (AI crawlers) (8) |
+| Puma | 8 | 2 | no matching product page in the manufacturer sitemap (6) |
+| Saucony | 8 | 5 | no matching product page in the manufacturer sitemap (3) |
+| Scott | 8 | 0 | manufacturer site not collected: Incapsula bot challenge (8) |
+| Brooks | 7 | 0 | manufacturer site not collected: Akamai bot protection (HTTP 403 on robots.txt) (7) |
+| Scarpa | 7 | 6 | no matching product page in the manufacturer sitemap (1) |
+| Under Armour | 7 | 0 | manufacturer site not collected: terms page rendered by JavaScript: terms could not be checked (7) |
+| NNormal | 6 | 5 | no matching product page in the manufacturer sitemap (1) |
+| Rossignol | 5 | 0 | manufacturer site not collected: terms forbid systematic extraction and robots/scrapers (5) |
+| Dynafit | 4 | 4 |  |
+| Inov-8 | 4 | 0 | manufacturer site not collected: robots.txt disallows ClaudeBot, Claude-Web and anthropic-ai (AI crawlers) (4) |
+| Lowa | 4 | 3 | no matching product page in the manufacturer sitemap (1) |
+| Millet | 3 | 0 | manufacturer site not collected: legal pages rendered by JavaScript: terms could not be checked (3) |
+| Tecnica | 3 | 0 | manufacturer site not collected: site unreachable (TLS certificate error) (3) |
+| VEJA | 2 | 0 | no sitemap published by the manufacturer; product page not searched (2) |
+
+## The 20 models with the most missing fields
+
+| Model id | Missing fields (of 14) | Reason |
+|---|---|---|
+| `adidas-agravic` | 14 | manufacturer site not collected: Akamai bot protection (HTTP 403 on robots.txt) |
+| `adidas-agravic-2` | 14 | manufacturer site not collected: Akamai bot protection (HTTP 403 on robots.txt) |
+| `adidas-agravic-4` | 14 | manufacturer site not collected: Akamai bot protection (HTTP 403 on robots.txt) |
+| `adidas-agravic-flow-2` | 14 | manufacturer site not collected: Akamai bot protection (HTTP 403 on robots.txt) |
+| `adidas-agravic-lite` | 14 | manufacturer site not collected: Akamai bot protection (HTTP 403 on robots.txt) |
+| `adidas-agravic-sl` | 14 | manufacturer site not collected: Akamai bot protection (HTTP 403 on robots.txt) |
+| `adidas-agravic-speed` | 14 | manufacturer site not collected: Akamai bot protection (HTTP 403 on robots.txt) |
+| `adidas-agravic-speed-2` | 14 | manufacturer site not collected: Akamai bot protection (HTTP 403 on robots.txt) |
+| `adidas-agravic-speed-ultra-2` | 14 | manufacturer site not collected: Akamai bot protection (HTTP 403 on robots.txt) |
+| `adidas-agravic-tt` | 14 | manufacturer site not collected: Akamai bot protection (HTTP 403 on robots.txt) |
+| `adidas-soulstride` | 14 | manufacturer site not collected: Akamai bot protection (HTTP 403 on robots.txt) |
+| `adidas-soulstride-flow` | 14 | manufacturer site not collected: Akamai bot protection (HTTP 403 on robots.txt) |
+| `adidas-tracefinder` | 14 | manufacturer site not collected: Akamai bot protection (HTTP 403 on robots.txt) |
+| `adidas-tracefinder-2` | 14 | manufacturer site not collected: Akamai bot protection (HTTP 403 on robots.txt) |
+| `adidas-tracefinder-plus` | 14 | manufacturer site not collected: Akamai bot protection (HTTP 403 on robots.txt) |
+| `altra-escalante-4` | 14 | manufacturer site not collected: Akamai bot protection (HTTP 403 on robots.txt) |
+| `altra-experience-wild` | 14 | manufacturer site not collected: Akamai bot protection (HTTP 403 on robots.txt) |
+| `altra-experience-wild-3-plus` | 14 | manufacturer site not collected: Akamai bot protection (HTTP 403 on robots.txt) |
+| `altra-king-mt-2` | 14 | manufacturer site not collected: Akamai bot protection (HTTP 403 on robots.txt) |
+| `altra-lone-peak-9` | 14 | manufacturer site not collected: Akamai bot protection (HTTP 403 on robots.txt) |
+
+## Among models whose page was found: the thinnest pages
+
+| Model id | Missing fields (of 14) | Page |
+|---|---|---|
+| `mizuno-neo-lumina` | 14 | https://emea.mizuno.com/eu/fr-fr/mizuno-neo-lumina/J1GJ267301.html |
+| `dynafit-ultra-dna` | 13 | https://www.dynafit.com/fr-fr/chaussure-ultra-dna |
+| `merrell-wrapt` | 13 | https://www.merrell.com/FR/fr_FR/wrapt/50938M.html |
+| `mizuno-mxr-sport` | 13 | https://emea.mizuno.com/eu/fr-fr/mxr-sport/D1GA2451.html |
+| `mizuno-wave-mujin-11` | 13 | https://emea.mizuno.com/eu/fr-fr/wave-mujin-11/J1GJ257051.html |
+| `saucony-guide-tr` | 13 | https://www.saucony.com/FR/fr_FR/guide-tr/61277M.html |
+| `merrell-vapor-glove-6` | 12 | https://www.merrell.com/FR/fr_FR/vapor-glove-6-leather/58037W.html |
+| `mizuno-neo-accera` | 12 | https://emea.mizuno.com/eu/fr-fr/mizuno-neo-accera/J1GJ265001.html |
+| `mizuno-wave-rider-tt-3` | 12 | https://emea.mizuno.com/eu/fr-fr/wave-rider-tt-3/J1GC253251.html |
+| `puma-pounce-lite-2` | 12 | https://eu.puma.com/fr/fr/pd/chaussures-de-trail-running-pounce-lite-2-ptx-unisexe/313737 |
+| `merrell-antora-4` | 11 | https://www.merrell.com/FR/fr_FR/antora-4/60157W.html |
+| `merrell-morphlite` | 11 | https://www.merrell.com/FR/fr_FR/morphlite/58734M.html |
+| `merrell-nova-4` | 11 | https://www.merrell.com/FR/fr_FR/nova-4/60175M.html |
+| `merrell-speed-strike-2` | 11 | https://www.merrell.com/FR/fr_FR/speed-strike-2/59768M.html |
+| `merrell-vapor-glove-7` | 11 | https://www.merrell.com/FR/fr_FR/vapor-glove-7/61058M.html |
+| `mizuno-neo-daichi-10` | 11 | https://emea.mizuno.com/eu/fr-fr/mizuno-neo-daichi-10/J1GM268051.html |
+| `saucony-ride-tr-3` | 11 | https://www.saucony.com/FR/fr_FR/ride-tr3/61276M.html |
+| `dynafit-ultra-100-3` | 10 | https://www.dynafit.com/fr-fr/chaussure-running-ultra-100-v3-hommes-08-0000064117 |
+| `dynafit-ultra-50` | 10 | https://www.dynafit.com/fr-fr/chaussure-running-ultra-50-hommes-08-0000064066 |
+| `merrell-mtl-adapt-matryx` | 10 | https://www.merrell.com/FR/fr_FR/mtl-adapt-matryx/60174W.html |
+
+<!-- reviews:start -->
+
+## Expert reviews (phase 4)
+
+Generated 2026-10-28 from `data/interim/expert_reviews.json` (`python -m pipeline.reviews --source all`). Doctors of Running is not collected (robots.txt bans AI crawlers), so at most 3 sources per model.
+
+| Sources with a review | 0 | 1 | 2 | 3 | 4 |
+|---|---|---|---|---|---|
+| Models | 139 | 49 | 30 | 2 | 0 |
+
+| Source | Models reviewed | of which exact | variant | manual |
+|---|---|---|---|---|
+| believe_in_the_run | 63 | 58 | 4 | 2 |
+| esprit_trail | 7 | 7 | 0 | 0 |
+| runrepeat | 45 | 45 | 2 | 0 |
+
+Reviews with lab measurements: 47.
+
+<!-- reviews:end -->

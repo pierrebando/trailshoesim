@@ -1,0 +1,1678 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$defs": {
+    "AspectAssessment": {
+      "additionalProperties": false,
+      "description": "What one expert review says about one criterion, as extracted by the NLP step.",
+      "properties": {
+        "score_0_10": {
+          "maximum": 10,
+          "minimum": 0,
+          "title": "Score 0 10",
+          "type": "number"
+        },
+        "evidence_excerpt": {
+          "maxLength": 250,
+          "minLength": 1,
+          "title": "Evidence Excerpt",
+          "type": "string"
+        },
+        "mention_count": {
+          "description": "Sentences of the review about this criterion.",
+          "minimum": 1,
+          "title": "Mention Count",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "score_0_10",
+        "evidence_excerpt",
+        "mention_count"
+      ],
+      "title": "AspectAssessment",
+      "type": "object"
+    },
+    "BuyerRatingSummary": {
+      "additionalProperties": false,
+      "description": "Buyer ratings pooled over all retailers (spec section 4).",
+      "properties": {
+        "review_count_total": {
+          "minimum": 0,
+          "title": "Review Count Total",
+          "type": "integer"
+        },
+        "raw_mean_0_5": {
+          "anyOf": [
+            {
+              "maximum": 5,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Raw Mean 0 5"
+        },
+        "bayesian_mean_0_5": {
+          "anyOf": [
+            {
+              "maximum": 5,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Bayesian Mean 0 5"
+        },
+        "prior_mean_0_5": {
+          "maximum": 5,
+          "minimum": 0,
+          "title": "Prior Mean 0 5",
+          "type": "number"
+        },
+        "prior_strength": {
+          "minimum": 0,
+          "title": "Prior Strength",
+          "type": "number"
+        }
+      },
+      "required": [
+        "review_count_total",
+        "raw_mean_0_5",
+        "bayesian_mean_0_5",
+        "prior_mean_0_5",
+        "prior_strength"
+      ],
+      "title": "BuyerRatingSummary",
+      "type": "object"
+    },
+    "Confidence": {
+      "additionalProperties": false,
+      "description": "How much the data behind this shoe can be trusted (spec section 8).",
+      "properties": {
+        "spec_completeness_0_1": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Spec Completeness 0 1",
+          "type": "number"
+        },
+        "expert_review_count": {
+          "minimum": 0,
+          "title": "Expert Review Count",
+          "type": "integer"
+        },
+        "buyer_review_count": {
+          "minimum": 0,
+          "title": "Buyer Review Count",
+          "type": "integer"
+        },
+        "price_age_days": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Age of the freshest price at build time.",
+          "title": "Price Age Days"
+        },
+        "level": {
+          "$ref": "#/$defs/ConfidenceLevel"
+        },
+        "reasons": {
+          "description": "Why the level is not higher, in plain English.",
+          "items": {
+            "type": "string"
+          },
+          "title": "Reasons",
+          "type": "array"
+        }
+      },
+      "required": [
+        "spec_completeness_0_1",
+        "expert_review_count",
+        "buyer_review_count",
+        "price_age_days",
+        "level",
+        "reasons"
+      ],
+      "title": "Confidence",
+      "type": "object"
+    },
+    "ConfidenceLevel": {
+      "description": "How much the user should trust the scores of a shoe.",
+      "enum": [
+        "high",
+        "medium",
+        "low"
+      ],
+      "title": "ConfidenceLevel",
+      "type": "string"
+    },
+    "CriteriaScores": {
+      "additionalProperties": false,
+      "description": "The eight criterion scores.",
+      "properties": {
+        "cushioning": {
+          "$ref": "#/$defs/CriterionScore"
+        },
+        "protection": {
+          "$ref": "#/$defs/CriterionScore"
+        },
+        "grip": {
+          "$ref": "#/$defs/CriterionScore"
+        },
+        "stability": {
+          "$ref": "#/$defs/CriterionScore"
+        },
+        "responsiveness": {
+          "$ref": "#/$defs/CriterionScore"
+        },
+        "lightness": {
+          "$ref": "#/$defs/CriterionScore"
+        },
+        "durability": {
+          "$ref": "#/$defs/CriterionScore"
+        },
+        "fit_width": {
+          "$ref": "#/$defs/CriterionScore"
+        }
+      },
+      "required": [
+        "cushioning",
+        "protection",
+        "grip",
+        "stability",
+        "responsiveness",
+        "lightness",
+        "durability",
+        "fit_width"
+      ],
+      "title": "CriteriaScores",
+      "type": "object"
+    },
+    "Criterion": {
+      "description": "The eight scoring criteria (see docs/scoring-spec.md, section 2).",
+      "enum": [
+        "cushioning",
+        "protection",
+        "grip",
+        "stability",
+        "responsiveness",
+        "lightness",
+        "durability",
+        "fit_width"
+      ],
+      "title": "Criterion",
+      "type": "string"
+    },
+    "CriterionScore": {
+      "additionalProperties": false,
+      "description": "Score of one criterion with the inputs that produced it (spec section 2).",
+      "properties": {
+        "score_0_10": {
+          "anyOf": [
+            {
+              "maximum": 10,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Score 0 10"
+        },
+        "spec_score_0_10": {
+          "anyOf": [
+            {
+              "maximum": 10,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Spec Score 0 10"
+        },
+        "expert_score_0_10": {
+          "anyOf": [
+            {
+              "maximum": 10,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Expert Score 0 10"
+        },
+        "spec_input_coverage": {
+          "description": "Share of the spec input weight whose value was known.",
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Spec Input Coverage",
+          "type": "number"
+        },
+        "expert_review_count": {
+          "minimum": 0,
+          "title": "Expert Review Count",
+          "type": "integer"
+        },
+        "inputs_used": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Inputs Used",
+          "type": "array"
+        },
+        "inputs_missing": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Inputs Missing",
+          "type": "array"
+        },
+        "provenance": {
+          "description": "Inputs that produced score_0_10, with their weight. Buyer ratings are never an input of a criterion (spec section 2.6).",
+          "items": {
+            "$ref": "#/$defs/ScoreInput"
+          },
+          "title": "Provenance",
+          "type": "array"
+        }
+      },
+      "required": [
+        "score_0_10",
+        "spec_score_0_10",
+        "expert_score_0_10",
+        "spec_input_coverage",
+        "expert_review_count",
+        "inputs_used",
+        "inputs_missing",
+        "provenance"
+      ],
+      "title": "CriterionScore",
+      "type": "object"
+    },
+    "Derivation": {
+      "description": "Documented ways a stored value may differ from the text of the page.",
+      "enum": [
+        "oz_to_g",
+        "computed_from_stacks",
+        "unit_from_label",
+        "order_from_drop",
+        "family_from_name",
+        "from_sitemap_url"
+      ],
+      "title": "Derivation",
+      "type": "string"
+    },
+    "ExpertReview": {
+      "additionalProperties": false,
+      "description": "One test by a specialist review source. Only an excerpt and a link are kept.",
+      "properties": {
+        "source": {
+          "title": "Source",
+          "type": "string"
+        },
+        "url": {
+          "format": "uri",
+          "maxLength": 2083,
+          "minLength": 1,
+          "title": "Url",
+          "type": "string"
+        },
+        "date": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Publication date; null if the page shows none.",
+          "title": "Date"
+        },
+        "retrieved_at": {
+          "format": "date",
+          "title": "Retrieved At",
+          "type": "string"
+        },
+        "language": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "ISO 639-1 code, e.g. 'fr'.",
+          "title": "Language"
+        },
+        "conclusion_excerpt": {
+          "anyOf": [
+            {
+              "maxLength": 250,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Conclusion Excerpt"
+        },
+        "aspects": {
+          "additionalProperties": {
+            "$ref": "#/$defs/AspectAssessment"
+          },
+          "propertyNames": {
+            "$ref": "#/$defs/Criterion"
+          },
+          "title": "Aspects",
+          "type": "object"
+        },
+        "nlp_model": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Hugging Face model id that produced `aspects`.",
+          "title": "Nlp Model"
+        }
+      },
+      "required": [
+        "source",
+        "url",
+        "date",
+        "retrieved_at",
+        "conclusion_excerpt",
+        "aspects"
+      ],
+      "title": "ExpertReview",
+      "type": "object"
+    },
+    "Gender": {
+      "description": "Gender variants a shoe is sold in.",
+      "enum": [
+        "men",
+        "women",
+        "unisex"
+      ],
+      "title": "Gender",
+      "type": "string"
+    },
+    "LugSpacing": {
+      "description": "Qualitative spacing between outsole lugs (rarely published as a number).",
+      "enum": [
+        "tight",
+        "medium",
+        "wide"
+      ],
+      "title": "LugSpacing",
+      "type": "string"
+    },
+    "Plate": {
+      "description": "Type of plate in the midsole.",
+      "enum": [
+        "none",
+        "rock_plate",
+        "carbon",
+        "other"
+      ],
+      "title": "Plate",
+      "type": "string"
+    },
+    "RetailOffer": {
+      "additionalProperties": false,
+      "description": "One product page at one retailer.",
+      "properties": {
+        "retailer": {
+          "$ref": "#/$defs/Retailer"
+        },
+        "url": {
+          "format": "uri",
+          "maxLength": 2083,
+          "minLength": 1,
+          "title": "Url",
+          "type": "string"
+        },
+        "price_eur": {
+          "exclusiveMinimum": 0,
+          "title": "Price Eur",
+          "type": "number"
+        },
+        "price_date": {
+          "description": "Day the price was read.",
+          "format": "date",
+          "title": "Price Date",
+          "type": "string"
+        },
+        "rating": {
+          "anyOf": [
+            {
+              "maximum": 5,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Average buyer rating, normalised to a 0-5 scale.",
+          "title": "Rating"
+        },
+        "review_count": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Review Count"
+        }
+      },
+      "required": [
+        "retailer",
+        "url",
+        "price_eur",
+        "price_date"
+      ],
+      "title": "RetailOffer",
+      "type": "object"
+    },
+    "Retailer": {
+      "description": "Retailers that define which shoes are in the catalogue (see docs/sources.md).",
+      "enum": [
+        "le_pape",
+        "irun",
+        "tradeinn",
+        "glisshop"
+      ],
+      "title": "Retailer",
+      "type": "string"
+    },
+    "ScoreInput": {
+      "additionalProperties": false,
+      "description": "One input of a score and its share of the final value (the provenance of a score).",
+      "properties": {
+        "input": {
+          "description": "e.g. 'specs.lug_depth_mm' or 'expert_reviews'.",
+          "title": "Input",
+          "type": "string"
+        },
+        "source": {
+          "description": "'manufacturer', 'lab_measurement', 'retailer', 'expert_reviews' or 'neutral_prior' (the 5/10 that stands in for reviews not yet collected, spec §2.5).",
+          "title": "Source",
+          "type": "string"
+        },
+        "value": {
+          "description": "The input as read, e.g. '4.5', 'Vibram Megagrip', '2 reviews'.",
+          "title": "Value",
+          "type": "string"
+        },
+        "input_score_0_10": {
+          "maximum": 10,
+          "minimum": 0,
+          "title": "Input Score 0 10",
+          "type": "number"
+        },
+        "weight": {
+          "description": "Share of the score; the weights of a score sum to 1.",
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Weight",
+          "type": "number"
+        }
+      },
+      "required": [
+        "input",
+        "source",
+        "value",
+        "input_score_0_10",
+        "weight"
+      ],
+      "title": "ScoreInput",
+      "type": "object"
+    },
+    "Shoe": {
+      "additionalProperties": false,
+      "description": "The final record of one shoe model, as read by the web app.",
+      "properties": {
+        "id": {
+          "examples": [
+            "brand-model-6"
+          ],
+          "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+          "title": "Id",
+          "type": "string"
+        },
+        "brand": {
+          "title": "Brand",
+          "type": "string"
+        },
+        "model": {
+          "title": "Model",
+          "type": "string"
+        },
+        "version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Version"
+        },
+        "category": {
+          "pattern": "^(trail|gravel)$",
+          "title": "Category",
+          "type": "string"
+        },
+        "newer_version_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Id of a newer version of the same model in the catalogue, if any.",
+          "title": "Newer Version Id"
+        },
+        "gender_variants": {
+          "items": {
+            "$ref": "#/$defs/Gender"
+          },
+          "minItems": 1,
+          "title": "Gender Variants",
+          "type": "array"
+        },
+        "release_year": {
+          "$ref": "#/$defs/SourcedInt"
+        },
+        "retail": {
+          "description": "A shoe is in the catalogue only if a retailer sells it.",
+          "items": {
+            "$ref": "#/$defs/RetailOffer"
+          },
+          "minItems": 1,
+          "title": "Retail",
+          "type": "array"
+        },
+        "specs": {
+          "$ref": "#/$defs/Specs"
+        },
+        "expert_reviews": {
+          "items": {
+            "$ref": "#/$defs/ExpertReview"
+          },
+          "title": "Expert Reviews",
+          "type": "array"
+        },
+        "buyer_rating": {
+          "$ref": "#/$defs/BuyerRatingSummary"
+        },
+        "criteria_scores": {
+          "$ref": "#/$defs/CriteriaScores"
+        },
+        "terrain_scores": {
+          "$ref": "#/$defs/TerrainScores"
+        },
+        "confidence": {
+          "$ref": "#/$defs/Confidence"
+        }
+      },
+      "required": [
+        "id",
+        "brand",
+        "model",
+        "version",
+        "category",
+        "newer_version_id",
+        "gender_variants",
+        "release_year",
+        "retail",
+        "specs",
+        "expert_reviews",
+        "buyer_rating",
+        "criteria_scores",
+        "terrain_scores",
+        "confidence"
+      ],
+      "title": "Shoe",
+      "type": "object"
+    },
+    "SourcedBool": {
+      "additionalProperties": false,
+      "description": "A sourced yes/no value.",
+      "properties": {
+        "value": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Value"
+        },
+        "source_name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "e.g. 'hoka.com' or 'derived from stack heights'",
+          "title": "Source Name"
+        },
+        "source_url": {
+          "anyOf": [
+            {
+              "format": "uri",
+              "maxLength": 2083,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Url"
+        },
+        "retrieved_at": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Retrieved At"
+        },
+        "missing_reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Missing Reason"
+        },
+        "note": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Context needed to interpret the value, e.g. the size weighed.",
+          "title": "Note"
+        },
+        "raw_snippet": {
+          "anyOf": [
+            {
+              "maxLength": 250,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Verbatim text of the source page that contains the value.",
+          "title": "Raw Snippet"
+        },
+        "derivation": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Derivation"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "How the value was obtained when it is not copied as-is."
+        }
+      },
+      "title": "SourcedBool",
+      "type": "object"
+    },
+    "SourcedFloat": {
+      "additionalProperties": false,
+      "description": "A sourced number (grams or millimetres).",
+      "properties": {
+        "value": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Value"
+        },
+        "source_name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "e.g. 'hoka.com' or 'derived from stack heights'",
+          "title": "Source Name"
+        },
+        "source_url": {
+          "anyOf": [
+            {
+              "format": "uri",
+              "maxLength": 2083,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Url"
+        },
+        "retrieved_at": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Retrieved At"
+        },
+        "missing_reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Missing Reason"
+        },
+        "note": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Context needed to interpret the value, e.g. the size weighed.",
+          "title": "Note"
+        },
+        "raw_snippet": {
+          "anyOf": [
+            {
+              "maxLength": 250,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Verbatim text of the source page that contains the value.",
+          "title": "Raw Snippet"
+        },
+        "derivation": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Derivation"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "How the value was obtained when it is not copied as-is."
+        }
+      },
+      "title": "SourcedFloat",
+      "type": "object"
+    },
+    "SourcedInt": {
+      "additionalProperties": false,
+      "description": "A sourced integer.",
+      "properties": {
+        "value": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Value"
+        },
+        "source_name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "e.g. 'hoka.com' or 'derived from stack heights'",
+          "title": "Source Name"
+        },
+        "source_url": {
+          "anyOf": [
+            {
+              "format": "uri",
+              "maxLength": 2083,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Url"
+        },
+        "retrieved_at": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Retrieved At"
+        },
+        "missing_reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Missing Reason"
+        },
+        "note": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Context needed to interpret the value, e.g. the size weighed.",
+          "title": "Note"
+        },
+        "raw_snippet": {
+          "anyOf": [
+            {
+              "maxLength": 250,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Verbatim text of the source page that contains the value.",
+          "title": "Raw Snippet"
+        },
+        "derivation": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Derivation"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "How the value was obtained when it is not copied as-is."
+        }
+      },
+      "title": "SourcedInt",
+      "type": "object"
+    },
+    "SourcedLugSpacing": {
+      "additionalProperties": false,
+      "description": "A sourced lug spacing.",
+      "properties": {
+        "value": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/LugSpacing"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "source_name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "e.g. 'hoka.com' or 'derived from stack heights'",
+          "title": "Source Name"
+        },
+        "source_url": {
+          "anyOf": [
+            {
+              "format": "uri",
+              "maxLength": 2083,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Url"
+        },
+        "retrieved_at": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Retrieved At"
+        },
+        "missing_reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Missing Reason"
+        },
+        "note": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Context needed to interpret the value, e.g. the size weighed.",
+          "title": "Note"
+        },
+        "raw_snippet": {
+          "anyOf": [
+            {
+              "maxLength": 250,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Verbatim text of the source page that contains the value.",
+          "title": "Raw Snippet"
+        },
+        "derivation": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Derivation"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "How the value was obtained when it is not copied as-is."
+        }
+      },
+      "title": "SourcedLugSpacing",
+      "type": "object"
+    },
+    "SourcedPlate": {
+      "additionalProperties": false,
+      "description": "A sourced plate type.",
+      "properties": {
+        "value": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Plate"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "source_name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "e.g. 'hoka.com' or 'derived from stack heights'",
+          "title": "Source Name"
+        },
+        "source_url": {
+          "anyOf": [
+            {
+              "format": "uri",
+              "maxLength": 2083,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Url"
+        },
+        "retrieved_at": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Retrieved At"
+        },
+        "missing_reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Missing Reason"
+        },
+        "note": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Context needed to interpret the value, e.g. the size weighed.",
+          "title": "Note"
+        },
+        "raw_snippet": {
+          "anyOf": [
+            {
+              "maxLength": 250,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Verbatim text of the source page that contains the value.",
+          "title": "Raw Snippet"
+        },
+        "derivation": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Derivation"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "How the value was obtained when it is not copied as-is."
+        }
+      },
+      "title": "SourcedPlate",
+      "type": "object"
+    },
+    "SourcedStr": {
+      "additionalProperties": false,
+      "description": "A sourced free-text value.",
+      "properties": {
+        "value": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Value"
+        },
+        "source_name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "e.g. 'hoka.com' or 'derived from stack heights'",
+          "title": "Source Name"
+        },
+        "source_url": {
+          "anyOf": [
+            {
+              "format": "uri",
+              "maxLength": 2083,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Url"
+        },
+        "retrieved_at": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Retrieved At"
+        },
+        "missing_reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Missing Reason"
+        },
+        "note": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Context needed to interpret the value, e.g. the size weighed.",
+          "title": "Note"
+        },
+        "raw_snippet": {
+          "anyOf": [
+            {
+              "maxLength": 250,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Verbatim text of the source page that contains the value.",
+          "title": "Raw Snippet"
+        },
+        "derivation": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Derivation"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "How the value was obtained when it is not copied as-is."
+        }
+      },
+      "title": "SourcedStr",
+      "type": "object"
+    },
+    "SourcedWidthList": {
+      "additionalProperties": false,
+      "description": "A sourced list of available widths.",
+      "properties": {
+        "value": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/$defs/Width"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Value"
+        },
+        "source_name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "e.g. 'hoka.com' or 'derived from stack heights'",
+          "title": "Source Name"
+        },
+        "source_url": {
+          "anyOf": [
+            {
+              "format": "uri",
+              "maxLength": 2083,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Url"
+        },
+        "retrieved_at": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Retrieved At"
+        },
+        "missing_reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Missing Reason"
+        },
+        "note": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Context needed to interpret the value, e.g. the size weighed.",
+          "title": "Note"
+        },
+        "raw_snippet": {
+          "anyOf": [
+            {
+              "maxLength": 250,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Verbatim text of the source page that contains the value.",
+          "title": "Raw Snippet"
+        },
+        "derivation": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Derivation"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "How the value was obtained when it is not copied as-is."
+        }
+      },
+      "title": "SourcedWidthList",
+      "type": "object"
+    },
+    "SpecSource": {
+      "description": "Which kind of source a resolved spec value comes from (phase 6 priority order).",
+      "enum": [
+        "manufacturer",
+        "lab_measurement",
+        "retailer"
+      ],
+      "title": "SpecSource",
+      "type": "string"
+    },
+    "Specs": {
+      "additionalProperties": false,
+      "description": "Technical specs. Every field is required so the builder must decide value-or-reason.",
+      "properties": {
+        "weight_g": {
+          "$ref": "#/$defs/SourcedFloat",
+          "description": "Weight of one shoe, men's reference size."
+        },
+        "weight_women_g": {
+          "$ref": "#/$defs/SourcedFloat",
+          "description": "Weight of one shoe, women's reference size."
+        },
+        "stack_heel_mm": {
+          "$ref": "#/$defs/SourcedFloat"
+        },
+        "stack_forefoot_mm": {
+          "$ref": "#/$defs/SourcedFloat"
+        },
+        "drop_mm": {
+          "$ref": "#/$defs/SourcedFloat"
+        },
+        "lug_depth_mm": {
+          "$ref": "#/$defs/SourcedFloat"
+        },
+        "lug_spacing": {
+          "$ref": "#/$defs/SourcedLugSpacing"
+        },
+        "platform_width_heel_mm": {
+          "$ref": "#/$defs/SourcedFloat"
+        },
+        "platform_width_forefoot_mm": {
+          "$ref": "#/$defs/SourcedFloat"
+        },
+        "midsole_foam": {
+          "$ref": "#/$defs/SourcedStr"
+        },
+        "plate": {
+          "$ref": "#/$defs/SourcedPlate"
+        },
+        "outsole_rubber": {
+          "$ref": "#/$defs/SourcedStr"
+        },
+        "waterproof": {
+          "$ref": "#/$defs/SourcedBool"
+        },
+        "upper_notes": {
+          "$ref": "#/$defs/SourcedStr"
+        },
+        "width_options": {
+          "$ref": "#/$defs/SourcedWidthList"
+        },
+        "sources": {
+          "additionalProperties": {
+            "$ref": "#/$defs/SpecSource"
+          },
+          "description": "For each KNOWN field, the kind of source it was taken from (priority: manufacturer > lab_measurement > retailer).",
+          "title": "Sources",
+          "type": "object"
+        }
+      },
+      "required": [
+        "weight_g",
+        "weight_women_g",
+        "stack_heel_mm",
+        "stack_forefoot_mm",
+        "drop_mm",
+        "lug_depth_mm",
+        "lug_spacing",
+        "platform_width_heel_mm",
+        "platform_width_forefoot_mm",
+        "midsole_foam",
+        "plate",
+        "outsole_rubber",
+        "waterproof",
+        "upper_notes",
+        "width_options",
+        "sources"
+      ],
+      "title": "Specs",
+      "type": "object"
+    },
+    "TerrainScore": {
+      "additionalProperties": false,
+      "description": "Suitability for one terrain type (spec section 3).",
+      "properties": {
+        "score_0_10": {
+          "anyOf": [
+            {
+              "maximum": 10,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Score 0 10"
+        },
+        "inputs_used": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Inputs Used",
+          "type": "array"
+        },
+        "inputs_missing": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Inputs Missing",
+          "type": "array"
+        },
+        "provenance": {
+          "items": {
+            "$ref": "#/$defs/ScoreInput"
+          },
+          "title": "Provenance",
+          "type": "array"
+        }
+      },
+      "required": [
+        "score_0_10",
+        "inputs_used",
+        "inputs_missing",
+        "provenance"
+      ],
+      "title": "TerrainScore",
+      "type": "object"
+    },
+    "TerrainScores": {
+      "additionalProperties": false,
+      "description": "The five terrain scores.",
+      "properties": {
+        "road_to_trail": {
+          "$ref": "#/$defs/TerrainScore"
+        },
+        "groomed_mixed": {
+          "$ref": "#/$defs/TerrainScore"
+        },
+        "technical_rocky": {
+          "$ref": "#/$defs/TerrainScore"
+        },
+        "muddy_soft": {
+          "$ref": "#/$defs/TerrainScore"
+        },
+        "wet_roots": {
+          "$ref": "#/$defs/TerrainScore"
+        }
+      },
+      "required": [
+        "road_to_trail",
+        "groomed_mixed",
+        "technical_rocky",
+        "muddy_soft",
+        "wet_roots"
+      ],
+      "title": "TerrainScores",
+      "type": "object"
+    },
+    "Width": {
+      "description": "Foot width options.",
+      "enum": [
+        "narrow",
+        "standard",
+        "wide",
+        "extra_wide"
+      ],
+      "title": "Width",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "The whole `data/processed/shoes.json` file.",
+  "properties": {
+    "schema_version": {
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "generated_at": {
+      "format": "date-time",
+      "title": "Generated At",
+      "type": "string"
+    },
+    "scoring_config_version": {
+      "description": "`version` field of scoring.yaml used.",
+      "title": "Scoring Config Version",
+      "type": "string"
+    },
+    "shoes": {
+      "items": {
+        "$ref": "#/$defs/Shoe"
+      },
+      "title": "Shoes",
+      "type": "array"
+    }
+  },
+  "required": [
+    "schema_version",
+    "generated_at",
+    "scoring_config_version",
+    "shoes"
+  ],
+  "title": "Catalog",
+  "type": "object"
+}

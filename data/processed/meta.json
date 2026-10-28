@@ -1,0 +1,32 @@
+{
+ "build_date": "2026-10-28",
+ "generated_at": "2026-10-28T17:09:41Z",
+ "pipeline_version": "0.1.0",
+ "scoring_config_version": "0.2.1",
+ "aspects_config_version": "0.3.0",
+ "shoe_count": 217,
+ "brand_count": 25,
+ "offer_count": 1194,
+ "expert_review_count": 118,
+ "models_dropped": {
+  "asics-gel-nimbus-tr-28": "no gender shown by any retailer listing",
+  "joma-sierra-barefoot": "no gender shown by any retailer listing",
+  "joma-tundra-barefoot": "no gender shown by any retailer listing"
+ },
+ "confidence_counts": {
+  "high": 2,
+  "medium": 41,
+  "low": 174
+ },
+ "price_date_min": "2026-10-28",
+ "price_date_max": "2026-10-28",
+ "retailers": [
+  "glisshop",
+  "tradeinn"
+ ],
+ "review_sources": [
+  "believe_in_the_run",
+  "esprit_trail",
+  "runrepeat"
+ ]
+}

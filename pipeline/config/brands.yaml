@@ -1,0 +1,84 @@
+# Brand alias table (phase 2).
+#
+# Key = canonical display name. For each brand:
+#   aliases:        spellings found in titles or retailer brand fields (matched
+#                   case- and accent-insensitively; the longest match wins).
+#   strip_phrases:  marketing words that some titles include and others omit, removed
+#                   before building the model key (e.g. "Fresh Foam X Garoé v2" vs
+#                   "Garoé v2").
+#   token_rewrites: regex rewrites of single tokens (e.g. New Balance "MT410" -> "410").
+#   style_code:     regex of brand-specific codes that are NOT versions (removed).
+#   name_numbers:   model names that end with a number which is NOT a version.
+#
+# Add a brand here when phase 2 reports it as unknown.
+
+brands:
+  adidas:
+    aliases: ["adidas", "adidas terrex"]
+    strip_phrases: ["terrex"]
+  Altra:
+    aliases: ["altra", "altra running"]
+  Asics:
+    aliases: ["asics"]
+  Brooks:
+    aliases: ["brooks", "brooks running"]
+  Craft:
+    aliases: ["craft"]
+  Dynafit:
+    aliases: ["dynafit"]
+    name_numbers: ["ultra 50"]   # "Ultra 50" and "Ultra 100" are two models
+  HOKA:
+    aliases: ["hoka one one", "hoka"]
+  Inov-8:
+    aliases: ["inov-8", "inov8", "inov 8"]
+  Joma:
+    aliases: ["joma"]
+    # Joma adds a 4-digit collection/colour code (2601 = 2026 collection), not a version.
+    style_code: "^2[0-9]{3}v?$"
+  Kailas:
+    aliases: ["kailas"]
+  Lowa:
+    aliases: ["lowa"]
+  Millet:
+    aliases: ["millet"]
+  La Sportiva:
+    aliases: ["la sportiva", "lasportiva"]
+  Merrell:
+    aliases: ["merrell"]
+  Mizuno:
+    aliases: ["mizuno"]
+  New Balance:
+    aliases: ["new balance", "newbalance"]
+    strip_phrases: ["fresh foam x", "fresh foam", "fuelcell"]
+    token_rewrites:
+      - {pattern: "^[mw]t(\\d{3})$", replace: "\\1"}   # MT410 / WT410 = men's / women's 410
+  NNormal:
+    aliases: ["nnormal"]
+  Nike:
+    aliases: ["nike", "nike trail"]
+  "On":  # quoted: YAML would otherwise read On as the boolean true
+    aliases: ["on running", "on"]
+  Puma:
+    aliases: ["puma"]
+  Raidlight:
+    aliases: ["raidlight"]
+  Rossignol:
+    aliases: ["rossignol"]
+  Salomon:
+    aliases: ["salomon"]
+  Saucony:
+    aliases: ["saucony"]
+  Scarpa:
+    aliases: ["scarpa"]
+  Scott:
+    aliases: ["scott"]
+  The North Face:
+    aliases: ["the north face", "tnf"]
+  Topo Athletic:
+    aliases: ["topo athletic", "topo"]
+  Under Armour:
+    aliases: ["under armour", "ua"]
+  Vibram FiveFingers:
+    aliases: ["vibram fivefingers", "vibram five fingers", "fivefingers"]
+  VJ:
+    aliases: ["vj", "vj shoes"]

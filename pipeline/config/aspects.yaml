@@ -1,0 +1,221 @@
+# Phase 5: aspect matching of review sentences to the 8 scoring criteria.
+#
+# How it works (details for non-specialists: docs/methodology-nlp.md):
+#   1. every sentence of a review is turned into a vector by the embedding model;
+#   2. so is every descriptor below; cosine similarity says how close they are (-1..1);
+#   3. a sentence MENTIONS a criterion if it is close enough to one of its descriptors;
+#   4. its DIRECTION (high or low) is decided by a second model, a zero-shot NLI model,
+#      which says whether the sentence implies "the shoe is light" or "the shoe is heavy";
+#   5. that is mapped to a score 0-10 (5 = neutral).
+#
+# Descriptors are short, generic phrases (English and French), never copied from the
+# reviews we evaluate on. "high" always means "more of the criterion" as defined in
+# docs/scoring-spec.md (for fit_width: roomier / more accommodating).
+
+version: "0.3.0"
+# 0.2.0: direction from the embedding similarity to high vs low descriptors (baseline).
+# 0.3.0: direction from an NLI model; stability descriptors describe the platform only.
+# Before/after numbers on the labelled sample: docs/evaluation.md.
+
+model:
+  name: sentence-transformers/paraphrase-multilingual-mpnet-base-v2
+  revision: 4328cf26390c98c5e3c738b4460a05b95f4911f5   # pinned for reproducibility
+  # Chosen on 2026-10-28 over paraphrase-multilingual-MiniLM-L12-v2 and
+  # intfloat/multilingual-e5-small: best criterion (12/15) and direction (15/15) on a
+  # small EN/FR check set, ~4 ms per sentence on CPU.
+
+thresholds:
+  # A sentence mentions a criterion if its best similarity to that criterion's
+  # descriptors is at least this...
+  mention_min_similarity: 0.55
+  # ...and at most this much below its best similarity to ANY criterion (a sentence
+  # may talk about two criteria: "light and grippy")...
+  mention_max_gap_to_best: 0.05
+  # ...and at least this much above its similarity to the BACKGROUND descriptors below
+  # (price, colour, test period...), which are not criteria.
+  background_margin: 0.05
+  # Calibrated on tests/fixtures/nlp/sentences.yaml (48 hand-written sentences): the
+  # first setting (0.45 / 0.08 / no background) found 30/32 mentions but also 16
+  # mentions in 16 off-topic sentences; this one finds 29/32 and 0 off-topic. Optimistic:
+  # the same person wrote the check set and the background list. The real test is the
+  # labelled sample (data/interim/gold_labels.csv, docs/evaluation.md).
+  # Used only with direction.method "embedding": d = similarity to the closest HIGH
+  # descriptor - to the closest LOW one; |d| below neutral_band is "neutral" (score 5);
+  # d is mapped linearly: d = +polarity_scale -> 10, d = -polarity_scale -> 0 (clipped).
+  neutral_band: 0.02
+  polarity_scale: 0.15
+  # For evaluation against the labels: score <= low_max is "low", >= high_min "high".
+  class_low_max: 4.0
+  class_high_min: 6.0
+
+aggregation:
+  # Within one review, sentence scores are averaged with weight = similarity - threshold
+  # (sentences that clearly talk about the criterion count more).
+  # Across reviews, scores are averaged with the source weights of scoring.yaml
+  # (expert_reviews.source_weights).
+  min_sentence_weight: 0.01
+
+direction:
+  # "nli" (default since 0.3.0) or "embedding" (the 0.2.0 baseline, kept to reproduce it).
+  method: nli
+  # Zero-shot NLI ("natural language inference"): given a premise (the review sentence)
+  # and a hypothesis, the model gives P(entailment), P(neutral), P(contradiction).
+  # Multilingual: French sentences are tested against the English hypotheses below.
+  nli_model:
+    name: MoritzLaurer/mDeBERTa-v3-base-xnli-multilingual-nli-2mil7
+    revision: b5113eb38ab63efdd7f280f8c144ea8b13f978ce   # pinned, 558 MB, CPU
+  # d = ((P(entail HIGH) - P(contradict HIGH)) - (P(entail LOW) - P(contradict LOW))) / 2,
+  # between -1 and 1; score = 5 + 5 * d. A sentence the model finds neutral gives ~5.
+  hypotheses:
+    cushioning:
+      high: The shoe is soft and well cushioned.
+      low: The shoe is firm and has little cushioning.
+    protection:
+      high: The shoe protects the feet well.
+      low: The shoe gives little protection underfoot.
+    grip:
+      high: The shoe has good grip and traction.
+      low: The shoe has poor grip and slips.
+    stability:
+      high: The shoe is stable on uneven ground.
+      low: The shoe is unstable on uneven ground.
+    responsiveness:
+      high: The shoe is responsive and energetic.
+      low: The shoe feels flat and unresponsive.
+    lightness:
+      high: The shoe is light.
+      low: The shoe is heavy.
+    durability:
+      high: The shoe is durable.
+      low: The shoe wears out quickly.
+    fit_width:
+      high: The shoe has a wide, roomy fit.
+      low: The shoe has a narrow fit.
+
+# Pros/cons lists (RunRepeat, Believe in the Run) are added as sentences: they are short
+# and to the point ("Heavy", "Stable ride").
+use_pros_cons: true
+
+# Sentences closer to these than to any criterion are not about the criteria.
+background:
+  - the price and value for money of the shoe
+  - the colour and look of the shoe
+  - shipping, delivery and packaging
+  - how long and where we tested the shoe
+  - overall I really like this shoe
+  - available sizes, versions and genders
+  - the history of the model and its previous versions
+  - the laces and the logo
+  - le prix de la chaussure
+  - la couleur et le design
+  - notre période de test
+  - dans l'ensemble c'est une bonne chaussure
+
+descriptors:
+  cushioning:
+    high:
+      - plush soft cushioning
+      - very well cushioned, protects the legs on long runs
+      - a deep, comfortable midsole that absorbs impacts
+      - max cushion shoe for ultra distances
+      - très amortie et confortable sur longue distance
+      - un amorti moelleux
+    low:
+      - firm thin midsole with ground feel
+      - minimal cushioning, harsh on long runs
+      - you feel the ground, low stack and firm ride
+      - amorti ferme, on ressent le sol
+      - peu d'amorti
+  protection:
+    high:
+      - rock plate protects the feet from sharp stones
+      - very protective underfoot and around the toes
+      - strong toe bumper protects against rocks
+      - très protectrice contre les cailloux
+      - une plaque de protection efficace
+    low:
+      - you feel every sharp rock underfoot
+      - thin sole offers little protection
+      - not protective on rocky terrain
+      - on sent les cailloux sous le pied
+      - peu protectrice
+  grip:
+    high:
+      - excellent grip on wet rocks and mud
+      - aggressive lugs bite into the trail
+      - sticky rubber, great traction on all surfaces
+      - excellente accroche sur rocher mouillé
+      - une adhérence remarquable
+    low:
+      - slippery on wet rock, poor traction
+      - the outsole lacks grip
+      - lugs do not bite in mud
+      - elle glisse sur le mouillé
+      - accroche décevante
+  stability:
+    # The PLATFORM (scoring-spec: low and wide = stable). Since 0.3.0 no lockdown phrases
+    # ("the foot slides around", "le pied bouge"): heel slip is fit, not stability.
+    high:
+      - stable and supportive platform
+      - secure and planted on technical terrain
+      - wide stable base, no ankle rolling
+      - très stable dans les descentes techniques
+      - une plateforme large et stable
+    low:
+      - unstable and wobbly
+      - the high stack feels tippy on rocks
+      - ankles roll easily on uneven ground
+      - manque de stabilité
+      - instable sur terrain technique, la cheville se tord
+  responsiveness:
+    high:
+      - snappy responsive ride
+      - bouncy energetic foam with great energy return
+      - fast and propulsive, great for racing
+      - dynamique et réactive
+      - un excellent retour d'énergie
+    low:
+      - dead flat ride with no energy return
+      - sluggish and mushy feel
+      - not responsive, hard to pick up the pace
+      - manque de dynamisme
+      - une mousse un peu molle et peu réactive
+  lightness:
+    high:
+      - very light and nimble
+      - a lightweight shoe
+      - feels lighter than it looks
+      - une chaussure légère
+      - très légère
+    low:
+      - heavy and clunky
+      - the shoe feels heavy
+      - bulky and weighty
+      - une chaussure lourde
+      - un peu lourde
+  durability:
+    high:
+      - very durable, still like new after hundreds of kilometres
+      - the outsole shows little wear
+      - tough upper that resists abrasion
+      - très durable
+      - une semelle qui s'use peu
+    low:
+      - wears out quickly
+      - the upper tore after a few runs
+      - outsole lugs wore down fast
+      - s'use rapidement
+      - durabilité décevante
+  fit_width:
+    high:
+      - roomy wide toebox, accommodating fit
+      - generous forefoot volume for wide feet
+      - plenty of room for toe splay
+      - chaussant large et confortable
+      - avant-pied spacieux
+    low:
+      - narrow tight fit
+      - the toebox is too narrow
+      - snug, not for wide feet
+      - chaussant étroit
+      - avant-pied serré

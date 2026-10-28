@@ -1,0 +1,88 @@
+# Manufacturer sites for phase 3 (specs). Checked 2026-10-28; details in docs/sources.md.
+#
+# status: allowed  -> collected with pipeline/specs
+#         blocked  -> NOT collected; `reason` says why (bot protection, robots.txt or terms)
+#
+# For allowed sites:
+#   sitemaps:      sitemap or sitemap-index URLs to read
+#   child_filter:  regex a child sitemap URL must match (for sitemap indexes)
+#   product_url:   regex a URL must match to be a product page of the right locale
+#   url_rewrite:   [from, to] applied to product URLs (e.g. add the French locale)
+#   men_hint / women_hint: regex telling the men's / women's page (men's page preferred,
+#                  because weight_g is the men's reference size)
+#   no_prices:     the terms forbid collecting prices by robot; we never read prices anyway
+#   last_segment_only: match the model in the last URL segment only (not in folders)
+
+brands:
+  Merrell:
+    status: allowed
+    no_prices: true
+    sitemaps: ["https://www.merrell.com/FR/fr_FR/sitemap_0.xml"]
+    product_url: "/FR/fr_FR/[^/]+/[0-9]+[MWU]?\\.html$"
+    men_hint: "[0-9]+M\\.html$"
+    women_hint: "[0-9]+W\\.html$"
+  Saucony:
+    status: allowed
+    no_prices: true
+    sitemaps: ["https://www.saucony.com/FR/fr_FR/sitemap_0.xml"]
+    product_url: "/FR/fr_FR/[^/]+/[0-9]+[MWU]?\\.html$"
+    men_hint: "[0-9]+M\\.html$"
+    women_hint: "[0-9]+W\\.html$"
+  Mizuno:
+    status: allowed
+    sitemaps: ["https://emea.mizuno.com/sitemap_index.xml"]
+    child_filter: "/eu/sitemap_[0-9]+-product\\.xml$"
+    product_url: "/eu/fr-fr/[^/]+/[A-Z0-9]+\\.html$"
+  Puma:
+    status: allowed
+    sitemaps: ["https://eu.puma.com/sitemaps/urls/fr/sitemap_index.xml"]
+    child_filter: "/fr/sitemap_[0-9]+\\.xml$"
+    product_url: "/fr/fr/pd/"
+    men_hint: "homme|men"
+    women_hint: "femme|women"
+  Scarpa:
+    status: allowed
+    sitemaps: ["https://scarpa.com/sitemap.xml"]
+    child_filter: "sitemap_products_[0-9]+\\.xml"
+    product_url: "^https://scarpa\\.com/products/"
+    url_rewrite: ["https://scarpa.com/products/", "https://scarpa.com/fr-fr/products/"]
+    women_hint: "woman|wmn"
+  NNormal:
+    status: allowed
+    sitemaps: ["https://www.nnormal.com/fr_FR/products.xml"]
+    product_url: "/fr_FR/(homme|femme|unisexe)/chaussures/"
+    last_segment_only: true
+    men_hint: "/homme/"
+    women_hint: "/femme/"
+  Dynafit:
+    status: allowed
+    sitemaps: ["https://www.dynafit.com/fr-fr-sitemap.xml"]
+    product_url: "/fr-fr/chaussure"
+    men_hint: "hommes"
+    women_hint: "femmes"
+  Lowa:
+    status: allowed
+    sitemaps: ["https://lowa.com/media/sitemap/sitemap_fr.xml"]
+    product_url: "^https://lowa\\.com/fr/[a-z0-9-]+$"
+    women_hint: "-ws$"
+  VEJA:
+    status: allowed
+    sitemaps: []   # no sitemap published (404); product discovery not implemented (2 models)
+
+  # --- not collected -------------------------------------------------------
+  La Sportiva: {status: blocked, reason: "robots.txt itself answers HTTP 403 (bot protection)"}
+  Altra: {status: blocked, reason: "Akamai bot protection (HTTP 403 on robots.txt)"}
+  Asics: {status: blocked, reason: "Akamai bot protection (HTTP 403 on every page)"}
+  adidas: {status: blocked, reason: "Akamai bot protection (HTTP 403 on robots.txt)"}
+  Brooks: {status: blocked, reason: "Akamai bot protection (HTTP 403 on robots.txt)"}
+  New Balance: {status: blocked, reason: "HTTP 403 error page on every request"}
+  Salomon: {status: blocked, reason: "PerimeterX bot protection ('Access to this page has been denied')"}
+  Scott: {status: blocked, reason: "Incapsula bot challenge"}
+  Joma: {status: blocked, reason: "robots.txt disallows scripted clients (Python-requests, curl, Python-urllib)"}
+  Craft: {status: blocked, reason: "robots.txt disallows ClaudeBot and anthropic-ai (AI crawlers)"}
+  Inov-8: {status: blocked, reason: "robots.txt disallows ClaudeBot, Claude-Web and anthropic-ai (AI crawlers)"}
+  Rossignol: {status: blocked, reason: "terms forbid systematic extraction and robots/scrapers"}
+  Vibram FiveFingers: {status: blocked, reason: "terms page behind a Cloudflare challenge: terms could not be checked"}
+  Under Armour: {status: blocked, reason: "terms page rendered by JavaScript: terms could not be checked"}
+  Millet: {status: blocked, reason: "legal pages rendered by JavaScript: terms could not be checked"}
+  Tecnica: {status: blocked, reason: "site unreachable (TLS certificate error)"}

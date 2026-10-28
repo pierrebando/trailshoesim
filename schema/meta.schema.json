@@ -1,0 +1,134 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$defs": {
+    "ConfidenceLevel": {
+      "description": "How much the user should trust the scores of a shoe.",
+      "enum": [
+        "high",
+        "medium",
+        "low"
+      ],
+      "title": "ConfidenceLevel",
+      "type": "string"
+    },
+    "Retailer": {
+      "description": "Retailers that define which shoes are in the catalogue (see docs/sources.md).",
+      "enum": [
+        "le_pape",
+        "irun",
+        "tradeinn",
+        "glisshop"
+      ],
+      "title": "Retailer",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "The whole `data/processed/meta.json` file, shown by the web app (\"data as of...\").",
+  "properties": {
+    "build_date": {
+      "format": "date",
+      "title": "Build Date",
+      "type": "string"
+    },
+    "generated_at": {
+      "format": "date-time",
+      "title": "Generated At",
+      "type": "string"
+    },
+    "pipeline_version": {
+      "description": "`version` of pyproject.toml.",
+      "title": "Pipeline Version",
+      "type": "string"
+    },
+    "scoring_config_version": {
+      "title": "Scoring Config Version",
+      "type": "string"
+    },
+    "aspects_config_version": {
+      "title": "Aspects Config Version",
+      "type": "string"
+    },
+    "shoe_count": {
+      "minimum": 0,
+      "title": "Shoe Count",
+      "type": "integer"
+    },
+    "brand_count": {
+      "minimum": 0,
+      "title": "Brand Count",
+      "type": "integer"
+    },
+    "offer_count": {
+      "minimum": 0,
+      "title": "Offer Count",
+      "type": "integer"
+    },
+    "expert_review_count": {
+      "minimum": 0,
+      "title": "Expert Review Count",
+      "type": "integer"
+    },
+    "models_dropped": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "description": "Model id -> why it is not in shoes.json.",
+      "title": "Models Dropped",
+      "type": "object"
+    },
+    "confidence_counts": {
+      "additionalProperties": {
+        "type": "integer"
+      },
+      "propertyNames": {
+        "$ref": "#/$defs/ConfidenceLevel"
+      },
+      "title": "Confidence Counts",
+      "type": "object"
+    },
+    "price_date_min": {
+      "format": "date",
+      "title": "Price Date Min",
+      "type": "string"
+    },
+    "price_date_max": {
+      "format": "date",
+      "title": "Price Date Max",
+      "type": "string"
+    },
+    "retailers": {
+      "items": {
+        "$ref": "#/$defs/Retailer"
+      },
+      "title": "Retailers",
+      "type": "array"
+    },
+    "review_sources": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Review Sources",
+      "type": "array"
+    }
+  },
+  "required": [
+    "build_date",
+    "generated_at",
+    "pipeline_version",
+    "scoring_config_version",
+    "aspects_config_version",
+    "shoe_count",
+    "brand_count",
+    "offer_count",
+    "expert_review_count",
+    "models_dropped",
+    "confidence_counts",
+    "price_date_min",
+    "price_date_max",
+    "retailers",
+    "review_sources"
+  ],
+  "title": "BuildMeta",
+  "type": "object"
+}

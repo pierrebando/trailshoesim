@@ -1,0 +1,322 @@
+# Trail Shoe Finder: scoring constants
+#
+# Every number used by the scoring system lives in this file. docs/scoring-spec.md says
+# what each one means; section numbers below (§) refer to that document.
+#
+# These values are HEURISTICS chosen by the project, not scientific laws. They are
+# starting points, to be tuned once real data is available.
+#
+# Conventions
+#   anchors: [[x, y], ...] define a piecewise-linear function (§0.3). x is strictly
+#            increasing; below the first x / above the last x, y is held constant.
+#   weight:  relative importance of an input inside a sub-score. The weights of one
+#            sub-score sum to 1. Missing inputs are dropped and the rest re-normalised.
+#   lookup:  "<table>.<attribute>" reads a value from the `lookups` section.
+#   table:   inline mapping from a categorical value to a 0-10 score.
+
+version: "0.2.1"
+# 0.2.1: min spec coverage 0.6 -> 0.45 (a stack, a lug depth or a rubber alone counts
+# again); protection REQUIRES the forefoot stack, so a plate alone never scores it.
+# 0.2.0 (phase 6 review): min spec coverage 0.4 -> 0.6; expert-only scores shrink towards
+# a neutral 5 when few reviews exist; foam lookup rules for compounds whose type is stated
+# in our own sources. Platform widths may now come from RunRepeat lab measurements.
+
+common:
+  # A spec sub-score is only computed if at least this share of its input weight is known (§2.3).
+  # 0.45 since 0.2.1 (0.4 in 0.1.0, 0.6 in 0.2.0). At 0.6, a 15 mm forefoot stack alone
+  # could not say "low protection" and grip lost 51 shoes; at 0.4, a retailer's "plate:
+  # yes" alone gave a barefoot shoe protection 9. 0.45 + protection's required input
+  # (below) keeps the evidence and drops the plate-only case.
+  min_spec_input_coverage: 0.45
+  # Scores are written with this many decimals in catalog.json.
+  output_decimals: 2
+
+# ---------------------------------------------------------------------------
+# Lookup tables (§2.1). Text specs are lower-cased; the FIRST rule whose `match` list
+# contains a substring of the text wins, so specific names come before generic ones.
+# No matching rule -> class unknown -> that input is treated as missing (never guessed).
+# ---------------------------------------------------------------------------
+lookups:
+  foam_classes:
+    rules:
+      - {match: ["peba", "pebax", "zoomx", "pwrrun pb"], class: peba}
+      - {match: ["etpu", "e-tpu", "boost", "infinergy"], class: etpu}
+      # Since 0.2.0, compound names whose type is stated in a collected review (phase 4):
+      # "EExpure supercritical foam" (NNormal Tomir 2), "Enerzy NXT ... nitrogen-infused
+      # foam" (Mizuno Neo Accera), "DNA Flash v2, a nitrogen-infused midsole" (Brooks
+      # Cascadia 20); "adn flash" is the machine translation shown by a retailer.
+      - {match: ["supercritical", "nitrogen", "nitro", "eexpure", "enerzy nxt", "dna flash", "adn flash"], class: supercritical_or_gas_infused}
+      # "ève" is the retailers' machine translation of "EVA".
+      - {match: ["eva", "ève"], class: eva}
+      # Not matched on purpose (no collected source states their type): FloatPro, EGO,
+      # Lightstrike, DynaSoft, PWRRUN(+), Frixion, PWRTRAC, ASICSGRIP, MaxTrac... An unknown
+      # compound stays missing rather than being assumed average.
+    classes:
+      peba:                          {cushioning: 8.0, responsiveness: 9.5, durability: 5.0}
+      etpu:                          {cushioning: 7.0, responsiveness: 7.5, durability: 8.5}
+      supercritical_or_gas_infused:  {cushioning: 7.5, responsiveness: 8.0, durability: 6.5}
+      eva:                           {cushioning: 5.0, responsiveness: 4.5, durability: 7.0}
+
+  rubber_classes:
+    rules:
+      - {match: ["megagrip", "sticky"], class: premium_sticky}
+      - {match: ["continental"], class: premium_all_round}
+      - {match: ["contagrip", "vibram"], class: brand_all_round}
+      - {match: ["carbon rubber", "durabrasion"], class: hard_durable}
+    classes:
+      premium_sticky:     {grip: 9.0, durability: 6.5}
+      premium_all_round:  {grip: 8.5, durability: 8.0}
+      brand_all_round:    {grip: 7.0, durability: 7.5}
+      hard_durable:       {grip: 5.5, durability: 8.5}
+
+  plate_classes:
+    none:        {protection: 3.0, responsiveness: 5.0}
+    rock_plate:  {protection: 9.0, responsiveness: 5.0}
+    carbon:      {protection: 8.0, responsiveness: 9.0}
+    other:       {protection: 6.0, responsiveness: 6.0}
+
+# ---------------------------------------------------------------------------
+# Criterion scores (§2). blend = weight of the spec sub-score vs the expert sub-score.
+# ---------------------------------------------------------------------------
+expert_reviews:
+  # Number of reviews mentioning a criterion at which the expert sub-score gets its full blend weight (§2.4).
+  full_weight_review_count: 3
+  # When a criterion has NO spec sub-score, the expert sub-score is shrunk towards this
+  # neutral value with weight min(1, n / full_weight_review_count) (§2.5): one review
+  # moves the score only a third of the way from 5, three reviews all the way.
+  prior_score_without_specs: 5.0
+  # Weight of each source when phase 5 averages aspect scores across reviews.
+  # RunRepeat backs its verdicts with lab tests, hence slightly more weight.
+  source_weights:
+    runrepeat: 1.2
+    believe_in_the_run: 1.0
+    esprit_trail: 1.0
+
+criteria:
+  cushioning:
+    blend: {spec: 0.6, expert: 0.4}
+    spec_inputs:
+      stack_heel_mm:     {weight: 0.45, anchors: [[20, 1], [25, 3], [30, 5], [35, 7], [40, 9], [45, 10]]}
+      stack_forefoot_mm: {weight: 0.30, anchors: [[14, 1], [19, 3], [24, 5], [29, 7], [34, 9], [39, 10]]}
+      midsole_foam:      {weight: 0.25, lookup: foam_classes.cushioning}
+
+  protection:
+    blend: {spec: 0.6, expert: 0.4}
+    # A plate says little without the foam under it; the stack is the main evidence.
+    required_inputs: [stack_forefoot_mm]
+    spec_inputs:
+      plate:             {weight: 0.55, lookup: plate_classes.protection}
+      stack_forefoot_mm: {weight: 0.45, anchors: [[15, 2], [20, 4], [25, 6.5], [30, 8.5], [35, 10]]}
+
+  grip:
+    blend: {spec: 0.5, expert: 0.5}
+    spec_inputs:
+      outsole_rubber: {weight: 0.45, lookup: rubber_classes.grip}
+      lug_depth_mm:   {weight: 0.45, anchors: [[1.5, 2], [2.5, 4], [3.5, 6.5], [4.5, 8.5], [5.5, 9.5], [6.5, 10]]}
+      lug_spacing:    {weight: 0.10, table: {tight: 4, medium: 6, wide: 8}}
+
+  stability:
+    blend: {spec: 0.4, expert: 0.6}
+    spec_inputs:
+      # Lower stack = foot closer to the ground = more stable.
+      stack_heel_mm:              {weight: 0.60, anchors: [[20, 9], [25, 8], [30, 6.5], [35, 5], [40, 3.5], [45, 2]]}
+      platform_width_forefoot_mm: {weight: 0.20, anchors: [[95, 3], [105, 5.5], [115, 8], [125, 10]]}
+      platform_width_heel_mm:     {weight: 0.20, anchors: [[75, 3], [85, 5.5], [95, 8], [105, 10]]}
+
+  responsiveness:
+    blend: {spec: 0.4, expert: 0.6}
+    spec_inputs:
+      midsole_foam: {weight: 0.70, lookup: foam_classes.responsiveness}
+      plate:        {weight: 0.30, lookup: plate_classes.responsiveness}
+
+  lightness:
+    blend: {spec: 0.9, expert: 0.1}
+    spec_inputs:
+      weight_g:
+        weight: 1.0
+        anchors: [[200, 10], [230, 8.5], [260, 7], [290, 5.5], [320, 4], [350, 2.5], [400, 0.5]]
+        # Used only when weight_g (men's reference size) is missing (§2.2).
+        fallback:
+          field: weight_women_g
+          anchors: [[170, 10], [200, 8.5], [230, 7], [260, 5.5], [290, 4], [320, 2.5], [370, 0.5]]
+
+  durability:
+    blend: {spec: 0.3, expert: 0.7}
+    spec_inputs:
+      outsole_rubber: {weight: 0.60, lookup: rubber_classes.durability}
+      midsole_foam:   {weight: 0.40, lookup: foam_classes.durability}
+
+  fit_width:
+    blend: {spec: 0.2, expert: 0.8}
+    spec_inputs:
+      # x = number of width options offered (standard only = 1).
+      width_options: {weight: 1.0, transform: count, anchors: [[1, 5], [2, 7], [3, 8.5], [4, 9.5]]}
+
+# ---------------------------------------------------------------------------
+# Terrain scores (§3). Same input format as criteria.
+# ---------------------------------------------------------------------------
+terrain:
+  required_inputs: [lug_depth_mm]
+  min_input_coverage: 0.4
+  scores:
+    road_to_trail:
+      lug_depth_mm:   {weight: 0.55, anchors: [[1.5, 9], [2.5, 10], [3.0, 9], [4.0, 6], [5.0, 3], [6.0, 1]]}
+      outsole_rubber: {weight: 0.15, lookup: rubber_classes.grip}
+      lug_spacing:    {weight: 0.15, table: {tight: 9, medium: 7, wide: 4}}
+      stack_heel_mm:  {weight: 0.15, anchors: [[20, 4], [30, 7], [40, 9], [45, 10]]}
+    groomed_mixed:
+      lug_depth_mm:   {weight: 0.50, anchors: [[2.0, 5], [3.0, 9], [3.5, 10], [4.0, 9.5], [5.0, 7], [6.0, 5]]}
+      outsole_rubber: {weight: 0.25, lookup: rubber_classes.grip}
+      lug_spacing:    {weight: 0.10, table: {tight: 7, medium: 8, wide: 6}}
+      plate:          {weight: 0.05, lookup: plate_classes.protection}
+      stack_heel_mm:  {weight: 0.10, anchors: [[20, 6], [30, 8], [40, 7], [45, 6]]}
+    technical_rocky:
+      lug_depth_mm:   {weight: 0.35, anchors: [[2.0, 3], [3.0, 6], [4.0, 9], [4.5, 10], [5.0, 9.5], [6.0, 8]]}
+      outsole_rubber: {weight: 0.25, lookup: rubber_classes.grip}
+      lug_spacing:    {weight: 0.05, table: {tight: 6, medium: 8, wide: 7}}
+      plate:          {weight: 0.20, lookup: plate_classes.protection}
+      stack_heel_mm:  {weight: 0.15, anchors: [[20, 9], [25, 8], [30, 6.5], [35, 5], [40, 3.5], [45, 2]]}
+    muddy_soft:
+      lug_depth_mm:   {weight: 0.55, anchors: [[2.0, 1], [3.0, 3], [4.0, 5.5], [5.0, 8.5], [6.0, 10]]}
+      outsole_rubber: {weight: 0.15, lookup: rubber_classes.grip}
+      lug_spacing:    {weight: 0.30, table: {tight: 2, medium: 6, wide: 10}}
+    wet_roots:
+      lug_depth_mm:   {weight: 0.30, anchors: [[2.0, 3], [3.0, 6], [4.0, 8.5], [5.0, 10], [6.0, 9.5]]}
+      outsole_rubber: {weight: 0.55, lookup: rubber_classes.grip}
+      lug_spacing:    {weight: 0.05, table: {tight: 5, medium: 7, wide: 7}}
+      stack_heel_mm:  {weight: 0.10, anchors: [[20, 9], [25, 8], [30, 6.5], [35, 5], [40, 3.5], [45, 2]]}
+
+# ---------------------------------------------------------------------------
+# Buyer ratings (§4)
+# ---------------------------------------------------------------------------
+buyer_rating:
+  prior_strength: 20                 # C: number of "virtual" reviews at the prior mean
+  fallback_prior_mean: 4.3           # used if the catalogue has too few reviews
+  min_reviews_for_catalogue_prior: 200
+  score_anchors: [[3.0, 0], [4.0, 5], [4.5, 8], [5.0, 10]]   # Bayesian mean (0-5) -> 0-10
+
+# ---------------------------------------------------------------------------
+# Runner profile -> weights (§5)
+# ---------------------------------------------------------------------------
+profile:
+  runner_weight_kg: {low: 55, high: 100}   # smoothstep ramp between low and high
+  distance_km: {low: 5, high: 100}         # log-scale ramp between low and high
+  load_mix: {runner_weight: 0.5, distance: 0.5}
+
+  # [weight at load 0, weight at load 1]; linear in between.
+  base_weights:
+    cushioning:     [1.0, 2.0]
+    protection:     [0.8, 1.3]
+    grip:           [1.2, 1.2]
+    stability:      [0.8, 1.5]
+    responsiveness: [1.3, 0.7]
+    lightness:      [1.5, 0.6]
+    durability:     [0.7, 1.2]
+    fit_width:      [0.8, 1.1]
+
+  # Derived "pole" scores that only exist to serve the sliders (§5.3).
+  derived_scores:
+    ground_feel: {invert: cushioning}                    # 10 - cushioning
+    agility: {mix: {lightness: 0.6, ground_feel: 0.4}}
+
+  preference_axes:
+    strength: 1.5     # weight added to a pole when its slider is at the extreme
+    cushioning_vs_ground_feel:
+      left:  {cushioning: 1.0}
+      right: {ground_feel: 1.0}
+    stability_vs_agility:
+      left:  {stability: 1.0}
+      right: {agility: 1.0}
+    dynamic_vs_comfortable:
+      left:  {responsiveness: 0.7, lightness: 0.3}
+      right: {cushioning: 0.6, fit_width: 0.4}
+
+  terrain:
+    composite_weight: 2.0
+    # Multiplied by the share of each selected terrain and added to criterion weights.
+    criterion_boosts:
+      road_to_trail:   {cushioning: 0.4, lightness: 0.2}
+      groomed_mixed:   {}
+      technical_rocky: {protection: 0.8, stability: 0.5, grip: 0.3}
+      muddy_soft:      {grip: 0.8}
+      wet_roots:       {grip: 0.8, stability: 0.3}
+
+  foot_strike:
+    heel:     {target_drop_mm: 9, sigma_mm: 4, weight: 0.6, criterion_boosts: {cushioning: 0.3}}
+    midfoot:  {target_drop_mm: 6, sigma_mm: 5, weight: 0.2, criterion_boosts: {}}
+    forefoot: {target_drop_mm: 4, sigma_mm: 4, weight: 0.6, criterion_boosts: {}}
+    unknown:  {target_drop_mm: 6, sigma_mm: 5, weight: 0.0, criterion_boosts: {}}
+
+  # Added to the fit_width weight.
+  foot_width_boosts: {narrow: 0.3, standard: 0.0, wide: 0.5, extra_wide: 0.7, unknown: 0.0}
+
+# ---------------------------------------------------------------------------
+# Final score and explanation (§6)
+# ---------------------------------------------------------------------------
+final:
+  buyer_share: 0.10            # share of the final score given to the buyer rating
+  min_ranking_coverage: 0.6    # below this, the shoe goes to "not enough data"
+
+explanation:
+  max_reasons: 3
+  max_drawbacks: 2
+  reason_min_score: 6.5
+  drawback_max_score: 4.0
+  missing_data_min_weight_share: 0.10
+  min_candidates_for_mean: 5   # below this, compare against 5/10 instead of the candidate mean
+  # [threshold, label]: a score gets the first label whose threshold it reaches.
+  score_labels: [[8.0, excellent], [6.5, good], [4.0, average], [2.5, weak], [0.0, poor]]
+
+# ---------------------------------------------------------------------------
+# "I like this model" similarity (§7)
+# ---------------------------------------------------------------------------
+similarity:
+  feature_weights:
+    cushioning: 1.0
+    protection: 1.0
+    grip: 1.0
+    stability: 1.0
+    responsiveness: 1.0
+    lightness: 1.0
+    durability: 1.0
+    fit_width: 1.0
+    road_to_trail: 0.5
+    groomed_mixed: 0.5
+    technical_rocky: 0.5
+    muddy_soft: 0.5
+    wet_roots: 0.5
+    drop_mm: 1.0
+    stack_heel_mm: 1.0
+    lug_depth_mm: 0.75
+    waterproof: 0.5
+  numeric_normalisation: {lower_percentile: 5, upper_percentile: 95}
+  min_shared_weight_share: 0.6
+  max_results: 10
+
+# ---------------------------------------------------------------------------
+# Confidence (§8)
+# ---------------------------------------------------------------------------
+confidence:
+  # weight_g counts as known if weight_g OR weight_women_g is known.
+  spec_completeness_weights:
+    weight_g: 1.0
+    stack_heel_mm: 1.0
+    stack_forefoot_mm: 1.0
+    drop_mm: 1.0
+    lug_depth_mm: 1.0
+    midsole_foam: 0.75
+    outsole_rubber: 0.75
+    plate: 0.5
+    waterproof: 0.5
+    width_options: 0.5
+    lug_spacing: 0.25
+    upper_notes: 0.25
+  levels:
+    high:
+      min_spec_completeness: 0.8
+      max_price_age_days: 14
+      evidence: {min_expert_reviews: 2, min_buyer_reviews: 20, require: all}
+    medium:
+      min_spec_completeness: 0.6
+      max_price_age_days: 30
+      evidence: {min_expert_reviews: 1, min_buyer_reviews: 10, require: any}

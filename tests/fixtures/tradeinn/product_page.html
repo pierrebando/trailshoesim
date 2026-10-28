@@ -1,0 +1,34 @@
+<!-- HAND-WRITTEN FIXTURE. Mimics the structure of a Tradeinn product page (JSON-LD
+     blocks, "Caractéristiques" list, price elements) with a FICTIONAL product. -->
+<html><head>
+<script type="application/ld+json">
+{"@context": "https://schema.org", "@type": ["Organization"], "name": "Example Store",
+ "aggregateRating": {"@type": "AggregateRating", "ratingValue": "4.6", "reviewCount": "4838"}}
+</script>
+<script type="application/ld+json">
+{"@context": "https://schema.org", "@type": "WebPage",
+ "breadcrumb": {"@type": "BreadcrumbList", "itemListElement": [
+   {"@type": "ListItem", "position": 1, "name": "Accueil"},
+   {"@type": "ListItem", "position": 2, "name": "Chaussures"},
+   {"@type": "ListItem", "position": 3, "name": "Chaussures trail running "}]},
+ "mainEntity": {"@type": "ProductGroup", "name": "Example brand Chaussures de trail running Fictional Trail 1",
+   "image": "https://www.tradeinn.com/f/10000/100000002/fictional-trail-1.webp",
+   "brand": {"@type": "Brand", "name": "Example brand"},
+   "aggregateRating": {"@type": "AggregateRating", "reviewCount": "13", "ratingValue": "4", "worstRating": "0", "bestRating": "4"},
+   "review": [{"@type": "Review", "reviewRating": {"@type": "Rating", "ratingValue": "4"}}],
+   "hasVariant": [
+     {"@type": "Product", "size": "EU 41", "offers": {"@type": "Offer", "price": "159.99", "availability": "https://schema.org/InStock"}},
+     {"@type": "Product", "size": "EU 42", "offers": {"@type": "Offer", "price": "152.49", "availability": "https://schema.org/InStock"}},
+     {"@type": "Product", "size": "EU 43", "offers": {"@type": "Offer", "price": "99.00", "availability": "https://schema.org/OutOfStock"}}
+   ]}}
+</script>
+</head><body>
+<p class="txt-base" id="js_precio_anterior_contenedor">Prix conseillé: <span class="txt-base txt__tachado" id="js-txt_precio_anterior"></span></p>
+<a href="/runnerinn/fr/chaussures-chaussures-trail-running/example-brand/10005-9001/sm">Example Brand trail</a>
+<ul>
+  <li><p class="txt-base txt__uppercase">Drop</p><p class="txt-base txt__bold">5-8 mm</p></li>
+  <li><p class="txt-base txt__uppercase">Genre</p><p class="txt-base txt__bold">Femme</p></li>
+  <li><p class="txt-base txt__uppercase">Largeur des Chaussures</p><p class="txt-base txt__bold">Standard</p></li>
+  <li><p class="txt-base txt__uppercase">Description</p><p class="txt-base txt__bold">This long marketing paragraph is far longer than eighty characters and must therefore never be stored by the collector.</p></li>
+</ul>
+</body></html>

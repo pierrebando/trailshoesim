@@ -1,0 +1,225 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$defs": {
+    "Gender": {
+      "description": "Gender variants a shoe is sold in.",
+      "enum": [
+        "men",
+        "women",
+        "unisex"
+      ],
+      "title": "Gender",
+      "type": "string"
+    },
+    "Retailer": {
+      "description": "Retailers that define which shoes are in the catalogue (see docs/sources.md).",
+      "enum": [
+        "le_pape",
+        "irun",
+        "tradeinn",
+        "glisshop"
+      ],
+      "title": "Retailer",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "One product page at one retailer, as collected in phase 1 (before any matching).\n\nNullable fields that are null must have an entry in `missing_reasons`, so that\n\"not found\" is always explained rather than silent.",
+  "properties": {
+    "retailer": {
+      "$ref": "#/$defs/Retailer"
+    },
+    "product_url": {
+      "format": "uri",
+      "maxLength": 2083,
+      "minLength": 1,
+      "title": "Product Url",
+      "type": "string"
+    },
+    "retailer_product_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Retailer Product Id"
+    },
+    "brand": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Brand"
+    },
+    "raw_title": {
+      "minLength": 1,
+      "title": "Raw Title",
+      "type": "string"
+    },
+    "model_name": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Model name without colour, when the retailer provides one separately.",
+      "title": "Model Name"
+    },
+    "gender_raw": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Gender label exactly as shown by the retailer.",
+      "title": "Gender Raw"
+    },
+    "gender": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Gender"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "`gender_raw` mapped to our vocabulary, if possible."
+    },
+    "price_eur": {
+      "anyOf": [
+        {
+          "exclusiveMinimum": 0,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Price Eur"
+    },
+    "original_price_eur": {
+      "anyOf": [
+        {
+          "exclusiveMinimum": 0,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Price before discount.",
+      "title": "Original Price Eur"
+    },
+    "in_stock": {
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "In Stock"
+    },
+    "rating": {
+      "anyOf": [
+        {
+          "maximum": 5,
+          "minimum": 0,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Average buyer rating on a 0-5 scale.",
+      "title": "Rating"
+    },
+    "review_count": {
+      "anyOf": [
+        {
+          "minimum": 0,
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Review Count"
+    },
+    "category_breadcrumb": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Category Breadcrumb",
+      "type": "array"
+    },
+    "image_url": {
+      "anyOf": [
+        {
+          "format": "uri",
+          "maxLength": 2083,
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Image Url"
+    },
+    "attributes": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "description": "Short key/value facts shown by the retailer.",
+      "title": "Attributes",
+      "type": "object"
+    },
+    "retrieved_at": {
+      "format": "date",
+      "title": "Retrieved At",
+      "type": "string"
+    },
+    "missing_reasons": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "title": "Missing Reasons",
+      "type": "object"
+    }
+  },
+  "required": [
+    "retailer",
+    "product_url",
+    "retailer_product_id",
+    "brand",
+    "raw_title",
+    "model_name",
+    "gender_raw",
+    "gender",
+    "price_eur",
+    "original_price_eur",
+    "in_stock",
+    "rating",
+    "review_count",
+    "category_breadcrumb",
+    "image_url",
+    "retrieved_at"
+  ],
+  "title": "RetailerListing",
+  "type": "object"
+}

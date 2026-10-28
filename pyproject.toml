@@ -1,0 +1,70 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "trail-shoe-finder"
+version = "0.1.0"
+description = "Offline data pipeline for Trail Shoe Finder, a static trail running shoe recommender."
+readme = "README.md"
+requires-python = ">=3.11"
+# Each phase adds only the dependencies it needs, with a comment saying which.
+dependencies = [
+    "beautifulsoup4>=4.12",  # phase 1: HTML parsing
+    "jsonschema>=4.21",      # phase 6: validate the output against schema/
+    "matplotlib>=3.8",       # phase 6: plots of the build report
+    "pydantic>=2.7,<3",
+    "pyyaml>=6.0",
+    "rapidfuzz>=3.6",        # phase 2: fuzzy title matching
+    "requests>=2.31",        # phase 1: HTTP client
+]
+
+[project.optional-dependencies]
+# Phase 5 only (offline Hugging Face model, pulls in PyTorch, ~1 GB): pip install -e ".[nlp]"
+nlp = [
+    "sentence-transformers>=3.0",  # stage 2: embedding model
+    "transformers>=4.40",          # stage 3: NLI model (also used by sentence-transformers)
+]
+dev = [
+    "pytest>=8.0",
+    "ruff>=0.6",
+]
+
+[tool.setuptools.packages.find]
+include = ["pipeline*"]
+
+[tool.setuptools.package-data]
+pipeline = ["config/*.yaml"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = [
+    "E", "W",   # pycodestyle
+    "F",        # pyflakes
+    "I",        # import sorting
+    "B",        # likely bugs
+    "UP",       # modern Python syntax
+    "N",        # naming conventions
+    "D",        # docstrings
+    "SIM",      # simplifications
+    "RUF",      # ruff-specific
+]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.lint.per-file-ignores]
+# Test names already say what they check; requiring docstrings there adds noise.
+"tests/*" = ["D"]
+# One title case per line reads better than wrapped tuples, even past 100 characters.
+"tests/test_titles.py" = ["D", "E501"]
+"tests/test_specs.py" = ["D", "E501"]
+"tests/test_retailer_fallback.py" = ["D", "E501"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-ra"

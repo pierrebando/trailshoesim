@@ -1,0 +1,42 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+# Anchored to the root so that pipeline/build/ (our code) is NOT ignored.
+/build/
+/dist/
+.venv/
+.venv.nosync/
+venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# --- Data ---
+# The raw HTTP cache holds third-party content we may not redistribute.
+data/raw/*
+!data/raw/README.md
+# Safety net: raw HTML must never be committed anywhere under data/.
+data/**/*.html
+data/**/*.htm
+
+# --- Hugging Face model cache, if pointed inside the repo ---
+.hf_cache/
+models_cache/
+
+# --- Secrets ---
+.env
+.env.*
+*.pem
+*.key
+
+# --- Editors / OS ---
+.DS_Store
+.idea/
+.vscode/
+*.swp
+
+# --- Web (phase 7) ---
+node_modules/

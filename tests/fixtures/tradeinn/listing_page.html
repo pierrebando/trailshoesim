@@ -1,0 +1,46 @@
+<!-- HAND-WRITTEN FIXTURE. Mimics the markup structure of a Tradeinn category page
+     (class names and ids as observed on 2026-10-28) with FICTIONAL products.
+     It is not a copy of a real page. -->
+<html><body>
+<a href="/runnerinn/fr/example-brand/9001/m">Example Brand</a>
+<a href="/runnerinn/fr/other-brand/9002/m">Other Brand</a>
+
+<!-- A carousel outside the main grid: must be ignored -->
+<ul class="product-listing-container" id="js-product-listing-container-oportunidades">
+  <li class="product-listing-wrapper js-hover-producto pointer">
+    <a href="https://www.tradeinn.com/runnerinn/fr/carousel-shoe/100000001/p" title="Carousel">
+      <h3 class="txt-base js-nombre_producto_listado">Carousel Shoe</h3>
+    </a>
+  </li>
+</ul>
+
+<ul class="listado-grid" id="js-producto-listado-grid">
+  <li onmouseenter="mouseenterProductList(this)" class="product-listing-wrapper js-hover-producto pointer">
+    <a href="https://www.tradeinn.com/runnerinn/fr/example-brand-chaussures-de-trail-running-fictional-trail-1/100000002/p" title="Example Brand Chaussures de trail running Fictional Trail 1">
+      <div class="listado-foto__mainfoto">
+        <img loading="lazy" class="js-image_list_product" src="https://www.tradeinn.com/h/10000/100000002/fictional-trail-1.webp">
+      </div>
+      <div class="listado-txt">
+        <h3 class="txt-base js-nombre_producto_listado">Example Brand Chaussures de trail running Fictional Trail 1</h3>
+        <p class="txt-base txt__select txt__bold js-precio_producto -novisibility"> 149.99 €</p>
+      </div>
+    </a>
+  </li>
+  <li class="product-listing-wrapper js-hover-producto pointer">
+    <a href="/runnerinn/fr/other-brand-chaussures-de-trail-running-imaginary-pro/100000003/p" title="Other Brand Imaginary Pro">
+      <div class="listado-foto__mainfoto">
+        <img loading="lazy" class="js-image_list_product" src="/h/10000/100000003/imaginary-pro.webp">
+      </div>
+      <div class="listado-txt">
+        <h3 class="txt-base js-nombre_producto_listado">Other Brand Chaussures de trail running Imaginary Pro</h3>
+        <p class="txt-base txt__select txt__bold js-precio_producto -novisibility"> 1 234,50 €</p>
+      </div>
+    </a>
+  </li>
+  <li class="product-listing-wrapper js-hover-producto pointer">
+    <!-- A card without a title: skipped -->
+    <a href="https://www.tradeinn.com/runnerinn/fr/broken-card/100000004/p"></a>
+  </li>
+</ul>
+<button class="btn-cargar-mas -novisibility" onclick="cargar_mas();" id="js-loading">Voir plus de produits</button>
+</body></html>
