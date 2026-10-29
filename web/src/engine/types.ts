@@ -47,13 +47,16 @@ export interface Specs {
   lug_spacing: SourcedValue<string>;
   platform_width_heel_mm: SourcedValue<number>;
   platform_width_forefoot_mm: SourcedValue<number>;
+  midsole_softness_ac: SourcedValue<number>;
+  energy_return_forefoot_pct: SourcedValue<number>;
   midsole_foam: SourcedValue<string>;
   plate: SourcedValue<string>;
   outsole_rubber: SourcedValue<string>;
   waterproof: SourcedValue<boolean>;
   upper_notes: SourcedValue<string>;
   width_options: SourcedValue<Width[]>;
-  sources: Record<string, "manufacturer" | "lab_measurement" | "retailer">;
+  fit_width_tag: SourcedValue<string>;
+  sources: Record<string, "manufacturer" | "manual" | "lab_measurement" | "retailer">;
 }
 
 export interface RetailOffer {

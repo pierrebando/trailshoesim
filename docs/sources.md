@@ -1,5 +1,15 @@
 # Data sources: access checks and methods
 
+**Purpose and volume.** Trail Shoe Finder is a non-commercial, educational student
+project: a decision-aid tool built for a digital innovation course, whose repository is
+read by a teacher. The data is collected once, for analysis and demonstration, in a small
+volume: about 2,350 retailer listings (about 400 shoe models after merging), the product
+pages of about 70 models on 11 manufacturer sites, and about 200 expert reviews (figures
+after the 2026-10-29 coverage pass; before it: 1,228 listings, 220 models). Every
+request sends a User-Agent that says so: `TrailShoeFinder/0.1 (student project for a
+digital innovation course; educational, non-commercial; at most 1 request/s; contact:
+...)`, the contact coming from the `TSF_CONTACT` environment variable.
+
 Checked on **2026-10-28** (phase 1 reconnaissance). Re-check before every new collection
 campaign: robots.txt files and terms change.
 
@@ -234,8 +244,30 @@ clients (Python-requests, curl) applies to us.
 | Inov-8 | 4 | blocked | robots.txt disallows ClaudeBot, Claude-Web, anthropic-ai |
 | Rossignol | 5 | blocked | terms forbid systematic extraction and robots/scrapers |
 | Vibram FiveFingers | 9 | blocked | terms page behind a Cloudflare challenge: terms could not be checked |
-| Under Armour, Millet | 7, 3 | blocked | terms pages rendered by JavaScript: could not be checked |
-| Tecnica | 3 | blocked | site unreachable (TLS certificate error) |
+| Under Armour | 7 | blocked | terms (rendered by JavaScript, read with a headless browser on 2026-10-29): "Vous ne devez en aucun cas télécharger, copier ou enregistrer du Contenu UA" |
+| Millet | 3 | blocked | conditions of sale (read with a headless browser on 2026-10-29) forbid "toute utilisation et/ou reproduction totale ou partielle" of the site content |
+| Tecnica | 3 | blocked | robots.txt of tecnica.com disallows ClaudeBot, anthropic-ai and Claude-Web (re-checked 2026-10-29); tecnicasports.com still has a TLS certificate error |
+
+**Brands added on 2026-10-29** (the completed Tradeinn crawl brought 27 new brands; the 14
+with at least 4 models were checked the same way, the terms read with a headless browser
+when they need JavaScript):
+
+| Brand | Models | Verdict | Why |
+|---|---|---|---|
+| Topo Athletic | 19 | **allowed** | open robots.txt, terms: no clause on robots/extraction |
+| Xero shoes | 7 | **allowed** | open robots.txt, terms: no such clause |
+| Mammut | 4 | **allowed** | open robots.txt, legal notice: no such clause |
+| CMP | 7 | allowed, not collected | terms: no such clause; only Italian/German/international sitemaps |
+| HOKA, Vivobarefoot, Helly Hansen | 7, 7, 4 | blocked | HTTP 403 (bot protection) |
+| Icebug | 8 | blocked | HTTP 429 from the very first request: treated as a refusal |
+| HI-TEC, Mount to Coast | 6, 5 | blocked | terms forbid to "spider, crawl, or scrape" |
+| On | 4 | blocked | terms forbid access "par tous les moyens (automatisés ou autres)" other than its interfaces |
+| +8000, Oriocx, Boreal | 12, 4, 7 | unreachable | TLS certificate or connection error; re-checked with `python -m pipeline.recheck` (2026-10-29: still failing) |
+
+For the new allowed brands the match is **stricter** than in phase 3: the URL may add only
+gender/locale/sale words to the model name (`allowed_extra_words`), and the page title
+must name the model and its exact version (Topo's `/mens-pursuit` page is the "Pursuit 3",
+so it is not used for our "Pursuit").
 
 Method for allowed sites: the brand's sitemap (French locale) lists product URLs; a model
 is matched by the words and version in the URL slug; the page text from the product

@@ -3,8 +3,7 @@
 import { useMemo } from "react";
 import { ShoeSearch } from "../components/ShoeSearch";
 import type { AppData } from "../data";
-import { applyFilters } from "../engine/filters";
-import { findSimilar, type FeatureDifference } from "../engine/similarity";
+import { similarToModel, type FeatureDifference } from "../engine/similarity";
 import { FEATURE_WORDS, shoeName } from "../labels";
 import type { AppState } from "../url";
 
@@ -22,12 +21,11 @@ const farText = (d: FeatureDifference[]) =>
 export function SimilarPage({ data, state, setState, referenceId }: Props) {
   const { catalog, config } = data;
   const reference = referenceId ? catalog.shoes.find((s) => s.id === referenceId) : undefined;
-  const outcome = useMemo(() => applyFilters(catalog.shoes, state.filters, state.profile), [catalog, state.filters, state.profile]);
   const result = useMemo(
-    () => (reference ? findSimilar(reference, outcome.passed, catalog.shoes, config) : null),
-    [reference, outcome, catalog, config],
+    () => (reference ? similarToModel(reference, catalog.shoes, state.filters, state.profile, config) : null),
+    [reference, catalog, state.filters, state.profile, config],
   );
-  const hiddenByFilters = catalog.shoes.length - outcome.passed.length;
+  const hiddenByFilters = result?.hiddenByFilters ?? 0;
   const toggleCompare = (id: string) =>
     setState({ ...state, compare: state.compare.includes(id) ? state.compare.filter((x) => x !== id) : [...state.compare, id].slice(0, 4) });
 

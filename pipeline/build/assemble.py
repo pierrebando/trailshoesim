@@ -14,6 +14,7 @@ from pipeline.models import (
     RetailOffer,
     ReviewAspects,
     Shoe,
+    SourcedValue,
 )
 
 
@@ -76,9 +77,10 @@ def build_shoe(
     aspects_file: InterimAspects,
     build_date: dt.date,
     config: dict,
+    manual: dict[str, SourcedValue] | None = None,
 ) -> Shoe:
     """The final record of one model (raises if a rule of the data model is broken)."""
-    resolved = resolve_specs(specs, reviews)
+    resolved = resolve_specs(specs, reviews, manual)
     values = spec_values(resolved)
     model_aspects = aspects_file.models.get(model.id)
     review_list = expert_reviews(

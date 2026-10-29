@@ -1,20 +1,94 @@
 {
- "listings_in": 1228,
+ "listings_in": 2350,
  "dropped": {
-  "kids": 30
+  "no_price": 265,
+  "kids": 99
  },
- "listings_used": 1198,
- "models_out": 220,
- "models_exact": 220,
- "models_fuzzy": 0,
- "fuzzy_merges_applied": 0,
+ "listings_used": 1986,
+ "models_out": 401,
+ "models_exact": 396,
+ "models_fuzzy": 5,
+ "fuzzy_merges_applied": 8,
  "review_rows_by_reason": {
-  "possible_duplicate": 19,
-  "version_unknown": 8,
-  "product_code_in_title": 1
+  "possible_duplicate": 62,
+  "fuzzy_merge": 8,
+  "version_unknown": 23,
+  "product_code_in_title": 9
  },
  "decisions_applied": 0,
  "most_uncertain_matches": [
+  {
+   "score": 92.7,
+   "merged": true,
+   "keys": [
+    "scarpa|ribelle run kalibra ht|",
+    "scarpa|ribelle run kalibra|"
+   ]
+  },
+  {
+   "score": 91.3,
+   "merged": false,
+   "keys": [
+    "x bionic|x bionic terraskin x00 c|",
+    "x bionic|x bionic terraskin x01|"
+   ]
+  },
+  {
+   "score": 91.3,
+   "merged": false,
+   "keys": [
+    "x bionic|x bionic terraskin x00 c|",
+    "x bionic|x bionic terraskin x02|"
+   ]
+  },
+  {
+   "score": 91.3,
+   "merged": false,
+   "keys": [
+    "x bionic|x bionic terraskin x00 c|",
+    "x bionic|x bionic terraskin x03|"
+   ]
+  },
+  {
+   "score": 92.9,
+   "merged": true,
+   "keys": [
+    "inov 8|parcklaw g 280|",
+    "inov 8|parkclaw g 280|"
+   ]
+  },
+  {
+   "score": 92.9,
+   "merged": true,
+   "keys": [
+    "vivobarefoot|primus trail ii fg barefoot|",
+    "vivobarefoot|primus trail knit fg barefoot|"
+   ]
+  },
+  {
+   "score": 90.9,
+   "merged": false,
+   "keys": [
+    "oriocx|etna 21 pro|",
+    "oriocx|etna 23 pro|"
+   ]
+  },
+  {
+   "score": 90.9,
+   "merged": false,
+   "keys": [
+    "vivobarefoot|primus trail 3.5 fg barefoot|",
+    "vivobarefoot|primus trail ii fg barefoot|"
+   ]
+  },
+  {
+   "score": 90.3,
+   "merged": false,
+   "keys": [
+    "scott|kinabalu ultra rc|",
+    "scott|kinabalu ultra|"
+   ]
+  },
   {
    "score": 90.3,
    "merged": false,
@@ -24,150 +98,105 @@
    ]
   },
   {
-   "score": 88.0,
+   "score": 89.4,
    "merged": false,
    "keys": [
-    "scott|kinabalu tr|",
-    "scott|kinabalu ultra|"
+    "vivobarefoot|primus trail barefoot|",
+    "vivobarefoot|primus trail flow barefoot|"
    ]
   },
   {
-   "score": 87.5,
+   "score": 89.3,
    "merged": false,
    "keys": [
-    "new balance|tektrel s|",
-    "new balance|tektrel|"
+    "vivobarefoot|primus trail 3.5 fg barefoot|",
+    "vivobarefoot|primus trail fg 3.5 barefoot|"
    ]
   },
   {
-   "score": 87.0,
+   "score": 89.3,
    "merged": false,
    "keys": [
-    "mizuno|wave rider tt|3",
-    "mizuno|wave rider|3"
+    "vivobarefoot|primus trail ii fg barefoot|",
+    "vivobarefoot|primus trial knit fg barefoot|"
    ]
   },
   {
-   "score": 87.0,
+   "score": 88.9,
    "merged": false,
    "keys": [
-    "scott|kinabalu mtn|",
-    "scott|kinabalu tr|"
+    "+8000|+8000 terkan low 26i|",
+    "+8000|+8000 terkan low|"
    ]
   },
   {
-   "score": 85.7,
-   "merged": false,
+   "score": 95.5,
+   "merged": true,
    "keys": [
-    "scott|supertrac rc|3",
-    "scott|supertrac|3"
-   ]
-  },
-  {
-   "score": 85.7,
-   "merged": false,
-   "keys": [
-    "joma|sierra barefoot|",
-    "joma|sima barefoot|"
-   ]
-  },
-  {
-   "score": 85.7,
-   "merged": false,
-   "keys": [
-    "puma|flare pro tr|",
-    "puma|flare pro|"
-   ]
-  },
-  {
-   "score": 83.9,
-   "merged": false,
-   "keys": [
-    "scarpa|golden gate 2 atr|",
-    "scarpa|golden gate lt|"
-   ]
-  },
-  {
-   "score": 82.4,
-   "merged": false,
-   "keys": [
-    "adidas|agravic sl|",
-    "adidas|agravic|"
-   ]
-  },
-  {
-   "score": 82.4,
-   "merged": false,
-   "keys": [
-    "adidas|agravic tt|",
-    "adidas|agravic|"
-   ]
-  },
-  {
-   "score": 81.8,
-   "merged": false,
-   "keys": [
-    "adidas|agravic lite|",
-    "adidas|agravic sl|"
-   ]
-  },
-  {
-   "score": 81.8,
-   "merged": false,
-   "keys": [
-    "adidas|agravic lite|",
-    "adidas|agravic tt|"
-   ]
-  },
-  {
-   "score": 81.5,
-   "merged": false,
-   "keys": [
-    "adidas|tracefinder plus|",
-    "adidas|tracefinder|"
-   ]
-  },
-  {
-   "score": 81.2,
-   "merged": false,
-   "keys": [
-    "adidas|agravic speed ultra|2",
-    "adidas|agravic speed|2"
+    "x bionic|x bionic terraskin x01|",
+    "x bionic|x bionic terraskin x02|"
    ]
   }
  ],
  "brands": {
+  "adidas": 22,
   "La Sportiva": 19,
-  "Altra": 16,
+  "Salomon": 19,
+  "Topo Athletic": 19,
+  "Altra": 18,
   "Asics": 16,
-  "adidas": 15,
+  "Inov-8": 15,
   "Merrell": 15,
   "Joma": 14,
-  "Mizuno": 13,
+  "Scott": 14,
+  "Dynafit": 13,
+  "+8000": 12,
+  "Mizuno": 12,
+  "Scarpa": 12,
+  "Craft": 10,
   "New Balance": 10,
-  "Salomon": 9,
   "Vibram FiveFingers": 9,
-  "Craft": 8,
+  "Icebug": 8,
   "Puma": 8,
   "Saucony": 8,
-  "Scott": 8,
+  "Boreal": 7,
   "Brooks": 7,
-  "Scarpa": 7,
+  "CMP": 7,
+  "HOKA": 7,
   "Under Armour": 7,
+  "Vivobarefoot": 7,
+  "Xero shoes": 7,
+  "HI-TEC": 6,
+  "Lowa": 6,
   "NNormal": 6,
+  "Mount to coast": 5,
   "Rossignol": 5,
-  "Dynafit": 4,
-  "Inov-8": 4,
-  "Lowa": 4,
+  "Helly hansen": 4,
+  "Mammut": 4,
+  "On": 4,
+  "Oriocx": 4,
+  "Tecnica": 4,
+  "Ande": 3,
   "Millet": 3,
-  "Tecnica": 3,
-  "VEJA": 2
+  "Nike": 3,
+  "Oakley": 3,
+  "Skechers": 3,
+  "Columbia": 2,
+  "Keen": 2,
+  "Kelme": 2,
+  "Kilpi": 2,
+  "VEJA": 2,
+  "X-BIONIC": 2,
+  "4t2": 1,
+  "Hummel": 1,
+  "Olympikus": 1,
+  "Raidlight": 1
  },
  "models_by_retailer_count": {
-  "1": 186,
-  "2": 34
+  "1": 336,
+  "2": 65
  },
- "old_versions_on_sale": 24,
- "discounted_old_versions": 19,
- "prior_mean_0_5": 4.956
+ "old_versions_on_sale": 40,
+ "discounted_old_versions": 30,
+ "prior_mean_0_5": 4.961
 }

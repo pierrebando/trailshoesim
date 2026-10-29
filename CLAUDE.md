@@ -111,6 +111,7 @@ tests/                  pytest suite
     `docs/methodology-nlp.md`, and measured on a labelled sample
     (`data/interim/gold_labels.csv`, `docs/evaluation.md`; labels made by the AI
     assistant at the owner's request, 5 rows checked by the owner, column `labelled_by`).
+    Not mentioned = null.
 18. Phase 6 implements `docs/scoring-spec.md` §2-4 and §8 literally, constants from
     `scoring.yaml`. Each spec field comes from manufacturer > lab measurement (RunRepeat:
     stacks, lug depth, platform widths, weight, drop) > retailer, except the drop:
@@ -127,7 +128,21 @@ tests/                  pytest suite
     §1, §5-§7 in `web/src/engine/` (pure functions, Vitest tests) and reads the constants
     from `data/processed/scoring_config.json`. Scoring 0.3.0 (owner's review of the example
     rankings): in the final score an unknown weighted term counts as a neutral 5 instead of
-    being dropped. Hash routes + `base: "./"` make the static build work under any sub-path. Not mentioned = null.
+    being dropped. Hash routes + `base: "./"` make the static build work under any sub-path.
+20. Coverage pass (2026-10-29): Tradeinn is crawled through the brand menu of every
+    category page and the related-product links of product pages; RunRepeat through its
+    trail, road and hiking catalogues. A manual tier (`data/manual/missing_specs.csv`,
+    provenance "manual (student entry)", every value quoted from the page) comes right
+    after the manufacturer. Brands added after phase 3 use a stricter manufacturer match
+    (`allowed_extra_words` + page title naming the exact version). Diagnosis:
+    `docs/coverage-diagnosis.md`; proposed changes to defaults: `docs/defaults-review.md`.
+21. Defaults review (2026-10-29, scoring 0.4.0), decided by the project owner: sites that
+    failed for a TECHNICAL reason are `status: unreachable` and re-checked at each refresh
+    (`python -m pipeline.recheck`, report only; refusals are never re-checked); the shop's
+    fit class (`fit_width_tag`) is a fit_width input of weight 0.3; RunRepeat's measured
+    midsole softness and forefoot energy return replace the foam class in cushioning and
+    responsiveness when they exist. Scoring 0.4.1: a narrow foot adds no weight to
+    fit_width, which rewards ROOMY shoes (narrow runners use the width filter).
 
 ## Rules
 
@@ -184,6 +199,9 @@ followed by `ln -s .venv.nosync .venv` so iCloud does not sync the virtual envir
 | 3b | Rebuild only the retailer fallback (no network) | `python -m pipeline.specs --retailer-only` |
 | 4 | Expert reviews (all sources) | `python -m pipeline.reviews --source all` |
 | 4 | One source / ignore the cache | `python -m pipeline.reviews --source runrepeat --refresh` |
+| 3 | Specs to fill by hand (template; keeps filled rows) | `python -m pipeline.specs.manual --template` |
+| all | Why data is missing, per source and cause | `python -m pipeline.diagnose` |
+| all | Re-check the sites that failed for a technical reason (report only) | `python -m pipeline.recheck` |
 | 5 | Install the NLP extra (once, ~1 GB with PyTorch) | `pip install -e ".[nlp]"` |
 | 5 | NLP aspects (downloads 2 models once, ~0.9 GB, then offline) | `python -m pipeline.nlp` |
 | 5 | Make the blind labelling sheet (never overwrites) | `python -m pipeline.nlp.make_labeling_sheet` |
@@ -193,7 +211,8 @@ followed by `ln -s .venv.nosync .venv` so iCloud does not sync the virtual envir
 | 7 | Web app: install (once, Node 20+) | `cd web && npm install` |
 | 7 | Web app: local preview (copies data/processed/ first) | `cd web && npm run dev` |
 | 7 | Web app: engine tests / type check / static build | `cd web && npm test`, `npm run typecheck`, `npm run build` |
-| 7 | Top 5 for three example runners | `cd web && npm run examples` |
+| 7 | Top 5 for six example runners + one "I like this model" case | `cd web && npm run examples` |
+| 7 | Browser checks of the built app under /trailshoesim/ + README screenshots | `cd web && npx playwright install chromium && npm run e2e` |
 | 8 | Deploy | automatic on push to `main` (`.github/workflows/deploy.yml`); data refresh: see README.md |
 
 Rebuild everything, from the HTTP cache in `data/raw/` (only pages that are not cached

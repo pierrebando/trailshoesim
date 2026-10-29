@@ -104,5 +104,7 @@ def test_user_agent_identifies_the_project_without_hardcoded_contact(
 ) -> None:
     monkeypatch.delenv("TSF_CONTACT", raising=False)
     assert http.user_agent().startswith("TrailShoeFinder/")
+    assert "student project" in http.user_agent()
+    assert http.PLACEHOLDER_CONTACT in http.user_agent()
     monkeypatch.setenv("TSF_CONTACT", "team@example.org")
     assert "team@example.org" in http.user_agent()

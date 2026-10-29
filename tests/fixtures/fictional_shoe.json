@@ -122,6 +122,26 @@
       "raw_snippet": null,
       "derivation": null
     },
+    "midsole_softness_ac": {
+      "value": null,
+      "source_name": null,
+      "source_url": null,
+      "retrieved_at": null,
+      "missing_reason": "no RunRepeat lab test of this model",
+      "note": null,
+      "raw_snippet": null,
+      "derivation": null
+    },
+    "energy_return_forefoot_pct": {
+      "value": null,
+      "source_name": null,
+      "source_url": null,
+      "retrieved_at": null,
+      "missing_reason": "no RunRepeat lab test of this model",
+      "note": null,
+      "raw_snippet": null,
+      "derivation": null
+    },
     "midsole_foam": {
       "value": "supercritical EVA",
       "source_name": "example.com",
@@ -181,6 +201,16 @@
       "source_url": "https://example.com/specs",
       "retrieved_at": "2026-10-20",
       "missing_reason": null,
+      "note": null,
+      "raw_snippet": null,
+      "derivation": null
+    },
+    "fit_width_tag": {
+      "value": null,
+      "source_name": null,
+      "source_url": null,
+      "retrieved_at": null,
+      "missing_reason": "retailer: not shown on the product page",
       "note": null,
       "raw_snippet": null,
       "derivation": null

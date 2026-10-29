@@ -55,7 +55,8 @@ def criterion_score(
         settings["spec_inputs"],
         values,
         config["lookups"],
-        config["common"]["min_spec_input_coverage"],
+        # fit_width lowers the bar: the shop's tag (weight 0.3) is most shoes' only input.
+        settings.get("min_spec_input_coverage", config["common"]["min_spec_input_coverage"]),
         required=tuple(settings.get("required_inputs", ())),
     )
     expert, n_reviews = expert_sub_score(criterion, reviews)

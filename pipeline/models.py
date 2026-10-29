@@ -124,6 +124,7 @@ class SpecSource(StrEnum):
     """Which kind of source a resolved spec value comes from (phase 6 priority order)."""
 
     MANUFACTURER = "manufacturer"
+    MANUAL = "manual"  # read on a product page by the student (data/manual/missing_specs.csv)
     LAB_MEASUREMENT = "lab_measurement"  # measured by a review source (RunRepeat)
     RETAILER = "retailer"  # shown on a retailer product page (lower confidence)
 
@@ -250,12 +251,21 @@ class Specs(StrictModel):
     lug_spacing: SourcedLugSpacing
     platform_width_heel_mm: SourcedFloat
     platform_width_forefoot_mm: SourcedFloat
+    midsole_softness_ac: SourcedFloat = Field(
+        description="Midsole hardness measured by a lab (Asker C durometer): LOWER = softer."
+    )
+    energy_return_forefoot_pct: SourcedFloat = Field(
+        description="Share of the impact energy the forefoot gives back, measured by a lab."
+    )
     midsole_foam: SourcedStr
     plate: SourcedPlate
     outsole_rubber: SourcedStr
     waterproof: SourcedBool
     upper_notes: SourcedStr
     width_options: SourcedWidthList
+    fit_width_tag: SourcedStr = Field(
+        description="The retailer's own fit class, verbatim (e.g. 'Pied large'): an opinion."
+    )
     sources: dict[str, SpecSource] = Field(
         description="For each KNOWN field, the kind of source it was taken from "
         "(priority: manufacturer > lab_measurement > retailer)."

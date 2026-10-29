@@ -2,8 +2,13 @@
 
 * manufacturer: data/interim/specs.json (phase 3), every value quoting the brand's page;
 * lab measurement: values MEASURED by a review source (RunRepeat, phase 4): stack
-  heights, lug depth, platform widths (scoring 0.2.0), weight and drop (scoring 0.3.1);
-* retailer: what Tradeinn / Glisshop show (phase 3b), lower confidence.
+  heights, lug depth, platform widths (scoring 0.2.0), weight and drop (scoring 0.3.1),
+  midsole softness and forefoot energy return (scoring 0.4.0, lab only);
+* retailer: what Tradeinn / Glisshop show (phase 3b), lower confidence. Since scoring
+  0.4.0 this includes the shop's own fit class (`fit_width_tag`, e.g. "Pied large").
+
+* manual: values the student read on a product page by hand (data/manual/), placed right
+  after the manufacturer because they usually come from the brand's own page;
 
 One exception to the order: for the DROP, a stated value (manufacturer, then retailer)
 beats the lab. A measured drop depends on where the lab measures the stacks and can be
@@ -36,9 +41,21 @@ LAB_FIELDS = {
     # RunRepeat weighs one men's shoe, like our weight_g (men's reference size).
     "weight_g": "weight_g",
     "drop_mm": "drop_mm",
+    # Scoring 0.4.0: measurements of the foam itself, better than guessing from its name.
+    # The heel energy return is not used: RunRepeat's heel average (49.6 %) is 10 points
+    # below its forefoot average (59.7 %), so the two cannot share one scale.
+    "midsole_softness_ac": "midsole_softness_ac",
+    "energy_return_forefoot_pct": "energy_return_forefoot_pct",
 }
-DEFAULT_ORDER = [SpecSource.MANUFACTURER, SpecSource.LAB_MEASUREMENT, SpecSource.RETAILER]
-TIER_ORDER = {"drop_mm": [SpecSource.MANUFACTURER, SpecSource.RETAILER, SpecSource.LAB_MEASUREMENT]}
+# Spec field -> the retailer's classification (RetailerFallback.tags) it is read from.
+RETAILER_TAGS = {"fit_width_tag": "fit_width"}
+DEFAULT_ORDER = [
+    SpecSource.MANUFACTURER, SpecSource.MANUAL, SpecSource.LAB_MEASUREMENT, SpecSource.RETAILER,
+]  # fmt: skip
+STATED_FIRST = [
+    SpecSource.MANUFACTURER, SpecSource.MANUAL, SpecSource.RETAILER, SpecSource.LAB_MEASUREMENT,
+]  # fmt: skip
+TIER_ORDER = {"drop_mm": STATED_FIRST}
 LAB_SOURCE = "runrepeat"
 # An exact review is a better proxy for the standard model than one of a variant (GTX...).
 MATCH_ORDER = [MatchConfidence.EXACT, MatchConfidence.MANUAL, MatchConfidence.VARIANT]
@@ -71,8 +88,22 @@ def _lab_reason(field: str, reviews: list[CollectedReview]) -> str:
     return "RunRepeat lab test does not give it"
 
 
-def resolve_specs(specs: ModelSpecs, reviews: list[CollectedReview]) -> Specs:
+def _retailer_tier(name: str, retailer: RetailerFallback | None) -> tuple[SourcedValue | None, str]:
+    """The retailer's value of spec `name` (a spec shown by the shop, or one of its tags)."""
+    if retailer is None:
+        return None, "retailer fallback not built"
+    holder = retailer.tags if name in RETAILER_TAGS else retailer
+    value = getattr(holder, RETAILER_TAGS.get(name, name))
+    return value, value.missing_reason or ""
+
+
+def resolve_specs(
+    specs: ModelSpecs,
+    reviews: list[CollectedReview],
+    manual: dict[str, SourcedValue] | None = None,
+) -> Specs:
     """The final `Specs` of one model, each field from the best available tier."""
+    manual = manual or {}
     retailer: RetailerFallback | None = specs.retailer_fallback
     resolved: dict[str, object] = {}
     sources: dict[str, SpecSource] = {}
@@ -89,14 +120,14 @@ def resolve_specs(specs: ModelSpecs, reviews: list[CollectedReview]) -> Specs:
             tiers.append((SpecSource.MANUFACTURER, value, value.missing_reason or ""))
         else:
             tiers.append((SpecSource.MANUFACTURER, None, NOT_FROM_MANUFACTURER))
+        if name in manual:  # no reason recorded when nothing was entered by hand
+            tiers.append((SpecSource.MANUAL, manual[name], ""))
         if name in LAB_FIELDS:
             tiers.append(
                 (SpecSource.LAB_MEASUREMENT, lab_value(name, reviews), _lab_reason(name, reviews))
             )
-        if name in RetailerFallback.model_fields:
-            value = getattr(retailer, name) if retailer else None
-            reason = value.missing_reason if value else "retailer fallback not built"
-            tiers.append((SpecSource.RETAILER, value, reason or ""))
+        if name in RetailerFallback.model_fields or name in RETAILER_TAGS:
+            tiers.append((SpecSource.RETAILER, *_retailer_tier(name, retailer)))
         order = TIER_ORDER.get(name, DEFAULT_ORDER)
         tiers.sort(key=lambda t: order.index(t[0]))
         for tier, value, _ in tiers:

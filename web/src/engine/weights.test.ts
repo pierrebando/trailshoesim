@@ -79,4 +79,8 @@ describe("weights (spec §5)", () => {
     expect(computeWeights(profile({ footStrike: "unknown" }), CONFIG).terms.drop_fit.total).toBe(0);
     expect(computeWeights(profile({ footWidth: "wide" }), CONFIG).terms.fit_width.footWidth).toBeCloseTo(0.5);
   });
+
+  it("gives a narrow foot no extra weight on fit_width, which rewards ROOMY shoes", () => {
+    expect(computeWeights(profile({ footWidth: "narrow" }), CONFIG).terms.fit_width.footWidth).toBe(0);
+  });
 });

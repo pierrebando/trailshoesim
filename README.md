@@ -12,6 +12,12 @@ data stands behind each score.
 
 ![Trail Shoe Finder: profile form and ranked results](docs/img/screenshot.png)
 
+| Model page | Comparator | Phone |
+|---|---|---|
+| ![Model page: score breakdown, criteria and sources](docs/img/model.png) | ![Comparator: three shoes side by side](docs/img/comparator.png) | ![Results on a 375 px phone screen](docs/img/mobile-results.png) |
+
+*(Screenshots taken by `npm run e2e` in `web/`.)*
+
 ## How it works (one paragraph)
 
 A Python **pipeline** runs offline on a laptop. It collects the shoes on sale and their
@@ -27,13 +33,13 @@ a server.
 flowchart LR
   subgraph Sources
     R["Retailers<br/>Tradeinn, Glisshop"]
-    M["Manufacturer pages<br/>(8 brands readable)"]
+    M["Manufacturer pages<br/>(11 brands readable)"]
     E["Expert reviews<br/>RunRepeat, Believe in the Run,<br/>Esprit Trail"]
   end
   subgraph Pipeline["Python pipeline (offline)"]
-    P1["1 collect<br/>1,228 listings"] --> P2["2 normalize<br/>220 models"]
+    P1["1 collect<br/>2,350 listings"] --> P2["2 normalize<br/>401 models"]
     P3["3 specs<br/>+ retailer fallback"]
-    P4["4 reviews<br/>118 reviews"] --> P5["5 AI aspects<br/>Hugging Face, CPU"]
+    P4["4 reviews<br/>197 reviews"] --> P5["5 AI aspects<br/>Hugging Face, CPU"]
     P6["6 build<br/>scores, confidence"]
   end
   R --> P1
@@ -52,13 +58,13 @@ flowchart LR
 | Source | What we take | What we never take |
 |---|---|---|
 | **Tradeinn**, **Glisshop** (retailers) | which shoes are on sale, price, buyer rating and review count, product link; specs shown on the product page | descriptions, images, buyer reviews |
-| **Manufacturer pages** (Merrell, Mizuno, Saucony, Scarpa, NNormal, Dynafit, Lowa, Puma) | weight, stack, drop, lug depth, foam, rubber... each value with the exact sentence it comes from | marketing text |
+| **Manufacturer pages** (Merrell, Mizuno, Saucony, Scarpa, NNormal, Dynafit, Lowa, Puma, Topo Athletic, Xero, Mammut) | weight, stack, drop, lug depth, foam, rubber... each value with the exact sentence it comes from | marketing text |
 | **RunRepeat**, **Believe in the Run**, **Esprit Trail** (expert reviews) | a link, our selection of at most 30 words, RunRepeat's lab measurements | the article text (kept only in a local, uncommitted cache for the AI step) |
 
 **Legal and ethical approach** (details in [docs/sources.md](docs/sources.md)):
 
 - `robots.txt` and the terms of use are read before collecting anything.
-- A site that blocks bots, bans AI crawlers or forbids extraction is **not** collected. Le Pape, i-Run and Doctors of Running were skipped this way, and so were 16 manufacturer sites (bot protection, AI-crawler bans, restrictive or unreadable terms, or unreachable).
+- A site that blocks bots, bans AI crawlers or forbids extraction is **not** collected. Le Pape, i-Run and Doctors of Running were skipped this way, and so were about 25 manufacturer sites (bot protection, AI-crawler bans, restrictive terms, or unreachable). Terms that need JavaScript are read with a headless browser before deciding.
 - At most 1 request per second, an identified User-Agent with a contact address, and every page cached so it is downloaded only once.
 - Raw HTML and full articles are never committed: only facts, excerpts of 30 words at most, and links.
 
@@ -83,7 +89,7 @@ Full specification: [docs/scoring-spec.md](docs/scoring-spec.md); every constant
 Details: [docs/methodology-nlp.md](docs/methodology-nlp.md) and
 [docs/evaluation.md](docs/evaluation.md).
 
-1. Input: the conclusion and pros/cons of the 118 expert reviews, in English and French.
+1. Input: the conclusion and pros/cons of the 197 expert reviews (134 models), in English and French.
 2. Each review is split into sentences.
 3. A multilingual **sentence-embedding model** (`paraphrase-multilingual-mpnet-base-v2`) finds which criterion a sentence talks about, by similarity to short descriptions of each criterion.
 4. A zero-shot **NLI model** (`mDeBERTa-v3-base-xnli-multilingual`) decides the direction. It checks whether the sentence implies "The shoe is light." or "The shoe is heavy.".
@@ -99,9 +105,10 @@ Details: [docs/methodology-nlp.md](docs/methodology-nlp.md) and
 - **Heuristics, not science.** The rules are reasonable rules of thumb from the running world, transparent and tunable, but not validated biomechanics.
 - **Prices are snapshots**, read on the build date (shown in the footer). Always check the retailer page.
 - **Partial coverage**:
-  - only 49 of 220 models have a manufacturer page we could read;
-  - 81 have an expert review;
-  - for a typical profile about 140 of the 217 shoes have too little data to be ranked;
+  - only 70 of 401 models have a manufacturer page we could read (most brands block automated access);
+  - 134 have an expert review;
+  - for a typical profile about 270 of the 389 shoes have too little data to be ranked;
+  - why each gap exists is diagnosed in [docs/coverage-diagnosis.md](docs/coverage-diagnosis.md);
   - widths are known for 4 shoes and waterproofing for 16, so these filters hide most shoes.
 - **Two retailers only**: Le Pape and i-Run could not be collected, so the catalogue is what Tradeinn and Glisshop sell.
 - **Foot strike and foot width are self-declared** and only nudge the weights (the drop preference weighs about 5 %).
@@ -110,32 +117,42 @@ Details: [docs/methodology-nlp.md](docs/methodology-nlp.md) and
 
 ## How to reproduce
 
-Requirements: Python 3.11+, Node 20+. All commands run from the repository root.
+Requirements: Python 3.11+, Node 20+. Commands run from the repository root unless they
+start with `cd web`.
 
 ```bash
 # Python environment
 python3.11 -m venv .venv && source .venv/bin/activate
-pip install -e ".[dev,nlp]"            # nlp = Hugging Face models (~1 GB, phase 5 only)
-export TSF_CONTACT="you@example.org"   # contact shown in the User-Agent
+pip install -e ".[dev,nlp]"            # nlp = PyTorch + transformers (~1 GB), phase 5 only
+export TSF_CONTACT="you@example.org"   # your contact, sent in the User-Agent (student project)
 
 # Pipeline, in order (pages already in data/raw/ are not downloaded again)
 python -m pipeline.collect --site all          # 1. retailer listings
 python -m pipeline.normalize                   # 2. one record per model (uses needs_review.csv)
 python -m pipeline.specs                       # 3. manufacturer specs + retailer fallback
 python -m pipeline.reviews --source all        # 4. expert reviews (uses reviews_needs_review.csv)
-python -m pipeline.nlp                         # 5. AI aspect scores (~8 min on CPU)
+python -m pipeline.nlp                         # 5. AI aspect scores (~8 min on CPU; the first
+                                               #    run downloads the 2 models, ~0.9 GB)
 python -m pipeline.build                       # 6. data/processed/shoes.json + build report
 
 # Checks
 pytest && ruff check .
+python -m pipeline.diagnose                    # why data is missing -> docs/coverage-diagnosis.md
+python -m pipeline.recheck                     # try again the sites that failed for a technical reason
+python -m pipeline.specs.manual --template     # specs to fill by hand -> data/manual/missing_specs.csv
 
-# Web app
+# Web app (in a second terminal: `npm run dev` keeps running)
 cd web && npm install && npm run dev           # http://localhost:5173
-npm test && npm run build                      # engine tests, static site in web/dist/
+cd web && npm test && npm run build            # engine tests, static site in web/dist/
+cd web && npm run examples                     # top 5 for six example runners
+cd web && npx playwright install chromium && npm run e2e   # browser checks + screenshots
 ```
 
-A fresh clone has no `data/raw/` cache, so step 1 downloads everything again (politely:
-about an hour). The committed `data/interim/` and `data/processed/` let you skip straight to
+**Where the data comes from on a fresh clone.** `data/raw/` (the HTTP cache) is not in
+the repository, because it holds third-party pages. Without it, step 1 downloads
+everything again (politely: about an hour for the whole pipeline). With a copy of the
+cache in `data/raw/`, the six steps run in about 10 minutes and reproduce the committed
+`data/interim/` and `data/processed/`. The committed data also lets you skip straight to
 the web app.
 
 ## Data refresh
@@ -168,6 +185,6 @@ web tests, builds `web/` from the committed `data/processed/` and publishes `web
 | [data/processed/](data/processed/) | `shoes.json`, `meta.json`, `scoring_config.json` read by the web app; `build_report.md` |
 | [schema/](schema/) | JSON Schemas generated from `pipeline/models.py` |
 | [web/](web/) | React + Vite + TypeScript app; `src/engine/` = scoring in pure TypeScript |
-| [tests/](tests/) | pytest suite (209 tests; HTML fixtures are hand-written, fictional) |
+| [tests/](tests/) | pytest suite, including checks on the committed data (`test_data_integrity.py`); HTML fixtures are hand-written, fictional |
 | [docs/](docs/) | Scoring spec, AI method and evaluation, sources and access checks, data coverage, phase reports |
 | [.github/workflows/](.github/workflows/) | GitHub Pages deployment |

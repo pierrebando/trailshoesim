@@ -1,7 +1,12 @@
 # Manufacturer sites for phase 3 (specs). Checked 2026-10-28; details in docs/sources.md.
 #
-# status: allowed  -> collected with pipeline/specs
-#         blocked  -> NOT collected; `reason` says why (bot protection, robots.txt or terms)
+# status: allowed     -> collected with pipeline/specs
+#         blocked     -> NOT collected; `reason` says why (bot protection, robots.txt or
+#                        terms). A refusal is final until the site owner says otherwise.
+#         unreachable -> NOT collected because of a TECHNICAL failure (TLS error, timeout).
+#                        `python -m pipeline.recheck` tries its `homepage` again at each data
+#                        refresh; if it answers, a person reads its robots.txt and terms
+#                        before setting `allowed`.
 #
 # For allowed sites:
 #   sitemaps:      sitemap or sitemap-index URLs to read
@@ -12,6 +17,9 @@
 #                  because weight_g is the men's reference size)
 #   no_prices:     the terms forbid collecting prices by robot; we never read prices anyway
 #   last_segment_only: match the model in the last URL segment only (not in folders)
+#   allowed_extra_words: if set, a URL may name the model plus ONLY these words (gender,
+#                  locale, sale): "mesa-summit-men" is then not taken for the "Mesa". Set
+#                  for the brands added in 2026-10; older brands keep the looser phase 3 rule.
 
 brands:
   Merrell:
@@ -69,7 +77,51 @@ brands:
     status: allowed
     sitemaps: []   # no sitemap published (404); product discovery not implemented (2 models)
 
+  # Brands added on 2026-10-29 (Tradeinn crawl completed). robots.txt open, no AI-crawler
+  # or scripted-client ban, homepage 200, terms checked: no clause on robots/extraction.
+  Topo Athletic:
+    status: allowed
+    allowed_extra_words: ["mens", "womens"]
+    sitemaps: ["https://www.topoathletic.com/sitemap_www.topoathletic.com_Index.xml"]
+    product_url: "^https://www\\.topoathletic\\.com/(mens|womens)-[a-z0-9-]+$"
+    men_hint: "/mens-"
+    women_hint: "/womens-"
+  Xero shoes:
+    status: allowed
+    allowed_extra_words: ["men", "women", "clearance", "original"]
+    sitemaps: ["https://xeroshoes.com/sitemap.xml"]
+    child_filter: "sitemap_products"
+    product_url: "^https://xeroshoes\\.com/products/[a-z0-9-]+$"
+    last_segment_only: true
+    men_hint: "-men"
+    women_hint: "-women"
+  Mammut:
+    status: allowed
+    allowed_extra_words: ["men", "women", "low"]
+    sitemaps: ["https://www.mammut.com/fr/fr/sitemap.xml"]
+    product_url: "^https://www\\.mammut\\.com/fr/fr/products/[0-9-]+/[a-z0-9-]+$"
+    men_hint: "-men$"
+    women_hint: "-women$"
+    last_segment_only: true
+  CMP:
+    status: allowed
+    sitemaps: []   # terms allow it, but only Italian/German/international sitemaps: not configured
+
   # --- not collected -------------------------------------------------------
+  # Checked 2026-10-29 for the brands added by the completed Tradeinn crawl:
+  HOKA: {status: blocked, reason: "homepage answers HTTP 403 (bot protection)"}
+  Vivobarefoot: {status: blocked, reason: "robots.txt answers HTTP 403 (bot protection)"}
+  Helly hansen: {status: blocked, reason: "robots.txt answers HTTP 403 (bot protection)"}
+  Icebug: {status: blocked, reason: "HTTP 429 (too many requests) from the first request: treated as a refusal"}
+  HI-TEC: {status: blocked, reason: "terms forbid to spider, crawl or scrape"}
+  Mount to coast: {status: blocked, reason: "terms forbid to spider, crawl or scrape"}
+  On: {status: blocked, reason: "terms forbid accessing the site by automated means other than its published interfaces"}
+  # Technical failures, not refusals: re-checked at each data refresh with
+  # `python -m pipeline.recheck`. "+8000" is quoted, otherwise YAML reads the number 8000.
+  "+8000": {status: unreachable, homepage: "https://www.mas8000.com", reason: "site unreachable (TLS certificate error)"}
+  Oriocx: {status: unreachable, homepage: "https://oriocx.com", reason: "site unreachable (TLS certificate error)"}
+  Boreal: {status: unreachable, homepage: "https://www.borealclimbing.com", reason: "site unreachable (connection error)"}
+
   La Sportiva: {status: blocked, reason: "robots.txt itself answers HTTP 403 (bot protection)"}
   Altra: {status: blocked, reason: "Akamai bot protection (HTTP 403 on robots.txt)"}
   Asics: {status: blocked, reason: "Akamai bot protection (HTTP 403 on every page)"}
@@ -83,6 +135,7 @@ brands:
   Inov-8: {status: blocked, reason: "robots.txt disallows ClaudeBot, Claude-Web and anthropic-ai (AI crawlers)"}
   Rossignol: {status: blocked, reason: "terms forbid systematic extraction and robots/scrapers"}
   Vibram FiveFingers: {status: blocked, reason: "terms page behind a Cloudflare challenge: terms could not be checked"}
-  Under Armour: {status: blocked, reason: "terms page rendered by JavaScript: terms could not be checked"}
-  Millet: {status: blocked, reason: "legal pages rendered by JavaScript: terms could not be checked"}
-  Tecnica: {status: blocked, reason: "site unreachable (TLS certificate error)"}
+  # Re-checked 2026-10-29 with a headless browser (the terms pages need JavaScript):
+  Under Armour: {status: blocked, reason: "terms forbid downloading, copying or saving site content"}
+  Millet: {status: blocked, reason: "terms forbid any use or reproduction of site content"}
+  Tecnica: {status: blocked, reason: "robots.txt disallows ClaudeBot, anthropic-ai and Claude-Web (AI crawlers)"}

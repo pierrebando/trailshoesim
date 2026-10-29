@@ -1,6 +1,14 @@
 # Scoring specification
 
-Version **0.3.1**. Must match `version` in `pipeline/config/scoring.yaml`.
+Version **0.4.1**. Must match `version` in `pipeline/config/scoring.yaml`.
+
+Changes in 0.4.1: a narrow foot no longer adds weight to fit_width (§5.6).
+
+Changes in 0.4.0 (defaults review, `docs/defaults-review.md`): RunRepeat's measured midsole
+softness and forefoot energy return replace the foam class in cushioning and
+responsiveness when they exist (§2.2); the shop's own fit class becomes a second, light
+fit_width input, with a lower coverage bar for that criterion (§2.2, §2.3). A fallback may
+now use any rule (anchors or lookup), not only anchors (§0.4).
 
 Changes in 0.3.1: RunRepeat's lab weight and drop become spec sources (§2.2).
 
@@ -85,7 +93,7 @@ value into a 0-10 number:
 | plate type | `lookup: plate_classes.<attr>` | direct table lookup |
 | categorical | `table: {...}` | direct mapping |
 | count | `transform: count` + `anchors` | `interp(len(value), anchors)` |
-| fallback | `fallback: {field, anchors}` | if the main field is null, use this field with these anchors |
+| fallback | `fallback: {field, <rule>}` | if the main field is null, use this field with its own rule (anchors or lookup), same weight |
 
 An input is **missing** if its spec value is null, or if a text value matches no
 lookup rule. Then, with `P` the inputs that are present:
@@ -152,14 +160,14 @@ values to review against expert reviews in phase 5.
 
 | Criterion | Inputs (weight) | Idea |
 |---|---|---|
-| cushioning | heel stack (0.45), forefoot stack (0.30), foam class (0.25) | more foam, softer foam → more cushioning |
+| cushioning | heel stack (0.45), forefoot stack (0.30), measured midsole softness, else foam class (0.25) | more foam, softer foam → more cushioning |
 | protection | plate (0.55), forefoot stack (0.45, **required**) | rock plate and thick forefoot block sharp rocks |
 | grip | rubber class (0.45), lug depth (0.45), lug spacing (0.10) | sticky rubber and deep lugs grip better off-road |
 | stability | heel stack, inverted (0.60), forefoot platform width (0.20), heel platform width (0.20) | low and wide = stable |
-| responsiveness | foam class (0.70), plate (0.30) | PEBA / supercritical foams and carbon plates return energy |
+| responsiveness | measured forefoot energy return, else foam class (0.70), plate (0.30) | PEBA / supercritical foams and carbon plates return energy |
 | lightness | weight (1.0) | lighter = higher score |
 | durability | rubber class (0.60), foam class (0.40) | hard rubber and EVA/eTPU last longer than sticky rubber and PEBA |
-| fit_width | number of width options (1.0) | more options = easier fit; mostly from expert reviews |
+| fit_width | number of width options (0.70), the shop's fit class (0.30) | more options or a roomy class = easier fit; mostly from expert reviews |
 
 Notes:
 
@@ -174,16 +182,28 @@ Notes:
 - **Platform widths** are rarely published by manufacturers. Since 0.2.0 they come from a
   review source's lab measurement when there is one (RunRepeat "midsole width", heel and
   forefoot); otherwise they are null and stability falls back on stack height.
+- **Measured foam (0.4.0).** When RunRepeat measured the midsole, its softness (Asker C
+  durometer, lower = softer) and forefoot energy return (%) are used instead of the foam
+  class, because a measurement of this shoe beats a guess from the foam's name. The foam
+  class is the `fallback`. Heel energy return is not used: RunRepeat's heel average
+  (49.6 %) is 10 points below its forefoot average (59.7 %), so one scale would mislead.
+  The anchors put RunRepeat's averages (about 38 AC, about 60 %) near the EVA class.
+- **Shop's fit class (0.4.0).** `fit_width_tag` is the retailer's own classification,
+  verbatim ("Standard", "Pied moyen" = 5, "Lâche" = loose 7.5, "Pied large" = wide 8.5).
+  It is an opinion, not a measurement, hence its weight of 0.3 next to the brand's width
+  options. Most shoes are "Standard", so it separates few of them.
 - **Source priority.** Each spec field takes the manufacturer value, else a lab
-  measurement (stack heights, lug depth, platform widths, weight, drop), else the
-  retailer's value. **Exception: the drop** takes stated values first (manufacturer, then
+  measurement (stack heights, lug depth, platform widths, weight, drop, softness, energy
+  return), else the retailer's value. **Exception: the drop** takes stated values first (manufacturer, then
   retailer) and the lab measurement only when nobody states one, because a measured drop
   can differ a lot from the designed drop that runners filter on.
 
 ### 2.3 Spec sub-score
 
 `S_c` = generic evaluator (§0.4) applied to `criteria.<c>.spec_inputs`. It is null if
-coverage < `common.min_spec_input_coverage`.
+coverage < `common.min_spec_input_coverage`, or < `criteria.<c>.min_spec_input_coverage`
+when a criterion sets its own. Only fit_width does (0.3), so that the shop's fit class, the
+only fit input of almost every shoe, can score alone.
 
 ### 2.4 Expert sub-score
 
@@ -392,7 +412,10 @@ total, because the evidence linking foot strike and drop is weak.
 ### 5.6 Foot width
 
 `width_fit_width = profile.foot_width_boosts.<foot_width>` is added to the `fit_width`
-weight. Runners with narrow or wide feet care more about fit.
+weight. Runners with wide feet care more about a roomy fit. The fit_width score measures
+how ROOMY a shoe is (more width options, a "wide" shop class), so a narrow foot gets no
+boost (0 since 0.4.1): a higher weight would push narrow-footed runners towards wide
+shoes. Narrow runners can use the width filter instead.
 
 ### 5.7 Total weights
 

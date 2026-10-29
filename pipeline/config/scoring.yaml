@@ -13,8 +13,15 @@
 #            sub-score sum to 1. Missing inputs are dropped and the rest re-normalised.
 #   lookup:  "<table>.<attribute>" reads a value from the `lookups` section.
 #   table:   inline mapping from a categorical value to a 0-10 score.
+#   fallback: {field, <rule>}: another field with its own anchors or lookup, used only
+#            when the main field is null (same weight).
 
-version: "0.3.1"
+version: "0.4.1"
+# 0.4.1: a narrow foot no longer adds weight to fit_width. fit_width means "roomy fit",
+# so the boost pushed narrow-footed runners towards shoes the shops call wide.
+# 0.4.0 (defaults review, docs/defaults-review.md): RunRepeat's measured midsole softness
+# (cushioning) and forefoot energy return (responsiveness) replace the foam-name lookup
+# when they exist; the shop's fit class becomes a second, light fit_width input.
 # 0.3.1: RunRepeat lab weight and drop are used as spec sources (weight: lab before
 # retailer; drop: stated values first, lab only when nobody states one).
 # 0.3.0 (phase 7 review): in the final score, a weighted term whose value is unknown
@@ -103,7 +110,13 @@ criteria:
     spec_inputs:
       stack_heel_mm:     {weight: 0.45, anchors: [[20, 1], [25, 3], [30, 5], [35, 7], [40, 9], [45, 10]]}
       stack_forefoot_mm: {weight: 0.30, anchors: [[14, 1], [19, 3], [24, 5], [29, 7], [34, 9], [39, 10]]}
-      midsole_foam:      {weight: 0.25, lookup: foam_classes.cushioning}
+      # A lab measurement of the foam beats a guess from its name; the foam class is the
+      # fallback. Asker C: LOWER = softer. RunRepeat's trail average is about 38 AC (-> 5.4,
+      # like an EVA); PEBA-type foams measure about 15-25 AC.
+      midsole_softness_ac:
+        weight: 0.25
+        anchors: [[20, 9], [25, 8], [30, 7], [35, 6], [40, 5], [45, 4], [55, 2.5], [70, 1]]
+        fallback: {field: midsole_foam, lookup: foam_classes.cushioning}
 
   protection:
     blend: {spec: 0.6, expert: 0.4}
@@ -131,8 +144,14 @@ criteria:
   responsiveness:
     blend: {spec: 0.4, expert: 0.6}
     spec_inputs:
-      midsole_foam: {weight: 0.70, lookup: foam_classes.responsiveness}
-      plate:        {weight: 0.30, lookup: plate_classes.responsiveness}
+      # Measured energy return first, the foam class otherwise. RunRepeat's forefoot average
+      # is about 60 % (-> 6.5); EVA shoes measure about 50-55 %, PEBA ones 70 % and more,
+      # in line with the foam classes (4.5 and 9.5).
+      energy_return_forefoot_pct:
+        weight: 0.70
+        anchors: [[45, 2], [50, 3.5], [55, 5], [60, 6.5], [65, 8], [70, 9.5], [75, 10]]
+        fallback: {field: midsole_foam, lookup: foam_classes.responsiveness}
+      plate: {weight: 0.30, lookup: plate_classes.responsiveness}
 
   lightness:
     blend: {spec: 0.9, expert: 0.1}
@@ -153,9 +172,15 @@ criteria:
 
   fit_width:
     blend: {spec: 0.2, expert: 0.8}
+    # The shop's tag is the only fit input of almost every shoe (width options are known
+    # for 7), so it must be able to score alone; its low weight matters when both exist.
+    min_spec_input_coverage: 0.3
     spec_inputs:
       # x = number of width options offered (standard only = 1).
-      width_options: {weight: 1.0, transform: count, anchors: [[1, 5], [2, 7], [3, 8.5], [4, 9.5]]}
+      width_options: {weight: 0.7, transform: count, anchors: [[1, 5], [2, 7], [3, 8.5], [4, 9.5]]}
+      # The retailer's own fit class, verbatim (French). An opinion of the shop, hence the
+      # low weight. "Standard" and "Pied moyen" (medium foot) are neutral; "Lâche" = loose.
+      fit_width_tag: {weight: 0.3, table: {"Standard": 5, "Pied moyen": 5, "Pied large": 8.5, "Lâche": 7.5}}
 
 # ---------------------------------------------------------------------------
 # Terrain scores (§3). Same input format as criteria.
@@ -252,8 +277,10 @@ profile:
     forefoot: {target_drop_mm: 4, sigma_mm: 4, weight: 0.6, criterion_boosts: {}}
     unknown:  {target_drop_mm: 6, sigma_mm: 5, weight: 0.0, criterion_boosts: {}}
 
-  # Added to the fit_width weight.
-  foot_width_boosts: {narrow: 0.3, standard: 0.0, wide: 0.5, extra_wide: 0.7, unknown: 0.0}
+  # Added to the fit_width weight. fit_width scores how ROOMY a shoe is, so only wide feet
+  # get a boost: for a narrow foot a roomy shoe is no advantage (0 since 0.4.1). Narrow
+  # runners rely on the width filter instead.
+  foot_width_boosts: {narrow: 0.0, standard: 0.0, wide: 0.5, extra_wide: 0.7, unknown: 0.0}
 
 # ---------------------------------------------------------------------------
 # Final score and explanation (§6)

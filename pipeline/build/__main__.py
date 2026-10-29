@@ -34,6 +34,7 @@ from pipeline.models import (
     InterimSpecs,
 )
 from pipeline.nlp.aspects import load_config as load_aspects_config
+from pipeline.specs.manual import ManualEntryError, load_manual_specs
 from pipeline.utils.config import load_scoring_config
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -77,6 +78,10 @@ def build(build_date: dt.date) -> tuple[dict, dict, dict[str, str]]:
     specs = InterimSpecs.model_validate_json((INTERIM / "specs.json").read_bytes()).models
     reviews = InterimReviews.model_validate_json((INTERIM / "expert_reviews.json").read_bytes())
     aspects = InterimAspects.model_validate_json((INTERIM / "expert_aspects.json").read_bytes())
+    try:
+        manual = load_manual_specs({m.id for m in catalog.models})
+    except ManualEntryError as error:
+        raise BuildError(str(error)) from error
 
     shoes, dropped = [], {}
     for model in catalog.models:
@@ -92,6 +97,7 @@ def build(build_date: dt.date) -> tuple[dict, dict, dict[str, str]]:
                 aspects,
                 build_date,
                 config,
+                manual.get(model.id),
             )
         )
     generated_at = dt.datetime.now(dt.UTC).replace(microsecond=0)

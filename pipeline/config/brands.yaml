@@ -70,6 +70,9 @@ brands:
     aliases: ["saucony"]
   Scarpa:
     aliases: ["scarpa"]
+    # Glisshop's men's titles say "Golden Gate 2 Atr", the women's "Golden Gate 2 Wmn":
+    # one shoe, which Scarpa's own page calls "Golden Gate 2 All Terrain".
+    strip_phrases: ["atr"]
   Scott:
     aliases: ["scott"]
   The North Face:

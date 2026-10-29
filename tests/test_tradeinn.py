@@ -43,11 +43,19 @@ def test_brand_links_are_found() -> None:
     assert tradeinn.parse_brand_ids(read("listing_page.html")) == {
         "9001": "example-brand",
         "9002": "other-brand",
+        "9003": "third-brand",  # brand menu, single-quoted link
     }
     assert tradeinn.parse_brand_trail_link(read("product_page.html")) == ("example-brand", "9001")
     assert tradeinn.brand_trail_url("example-brand", "9001").endswith(
         "/chaussures-chaussures-trail-running/example-brand/10005-9001/sm"
     )
+
+
+def test_related_trail_shoes_are_found_on_product_pages() -> None:
+    assert tradeinn.parse_trail_product_links(read("product_page.html")) == [
+        "https://www.tradeinn.com/runnerinn/fr/other-brand-chaussures-de-trail-running-imaginary-pro/100000003/p",
+        "https://www.tradeinn.com/runnerinn/fr/third-brand-chaussures-de-trail-running-made-up-2/100000005/p",
+    ]  # deduplicated, absolute, and the socks are not a trail shoe
 
 
 def test_product_page_full() -> None:

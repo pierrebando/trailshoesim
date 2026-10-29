@@ -1465,6 +1465,7 @@
       "description": "Which kind of source a resolved spec value comes from (phase 6 priority order).",
       "enum": [
         "manufacturer",
+        "manual",
         "lab_measurement",
         "retailer"
       ],
@@ -1504,6 +1505,14 @@
         "platform_width_forefoot_mm": {
           "$ref": "#/$defs/SourcedFloat"
         },
+        "midsole_softness_ac": {
+          "$ref": "#/$defs/SourcedFloat",
+          "description": "Midsole hardness measured by a lab (Asker C durometer): LOWER = softer."
+        },
+        "energy_return_forefoot_pct": {
+          "$ref": "#/$defs/SourcedFloat",
+          "description": "Share of the impact energy the forefoot gives back, measured by a lab."
+        },
         "midsole_foam": {
           "$ref": "#/$defs/SourcedStr"
         },
@@ -1521,6 +1530,10 @@
         },
         "width_options": {
           "$ref": "#/$defs/SourcedWidthList"
+        },
+        "fit_width_tag": {
+          "$ref": "#/$defs/SourcedStr",
+          "description": "The retailer's own fit class, verbatim (e.g. 'Pied large'): an opinion."
         },
         "sources": {
           "additionalProperties": {
@@ -1541,12 +1554,15 @@
         "lug_spacing",
         "platform_width_heel_mm",
         "platform_width_forefoot_mm",
+        "midsole_softness_ac",
+        "energy_return_forefoot_pct",
         "midsole_foam",
         "plate",
         "outsole_rubber",
         "waterproof",
         "upper_notes",
         "width_options",
+        "fit_width_tag",
         "sources"
       ],
       "title": "Specs",

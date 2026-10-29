@@ -1,5 +1,5 @@
 {
- "version": "0.3.1",
+ "version": "0.4.1",
  "common": {
   "min_spec_input_coverage": 0.45,
   "output_decimals": 2
@@ -210,9 +210,46 @@
       ]
      ]
     },
-    "midsole_foam": {
+    "midsole_softness_ac": {
      "weight": 0.25,
-     "lookup": "foam_classes.cushioning"
+     "anchors": [
+      [
+       20,
+       9
+      ],
+      [
+       25,
+       8
+      ],
+      [
+       30,
+       7
+      ],
+      [
+       35,
+       6
+      ],
+      [
+       40,
+       5
+      ],
+      [
+       45,
+       4
+      ],
+      [
+       55,
+       2.5
+      ],
+      [
+       70,
+       1
+      ]
+     ],
+     "fallback": {
+      "field": "midsole_foam",
+      "lookup": "foam_classes.cushioning"
+     }
     }
    }
   },
@@ -390,9 +427,42 @@
     "expert": 0.6
    },
    "spec_inputs": {
-    "midsole_foam": {
+    "energy_return_forefoot_pct": {
      "weight": 0.7,
-     "lookup": "foam_classes.responsiveness"
+     "anchors": [
+      [
+       45,
+       2
+      ],
+      [
+       50,
+       3.5
+      ],
+      [
+       55,
+       5
+      ],
+      [
+       60,
+       6.5
+      ],
+      [
+       65,
+       8
+      ],
+      [
+       70,
+       9.5
+      ],
+      [
+       75,
+       10
+      ]
+     ],
+     "fallback": {
+      "field": "midsole_foam",
+      "lookup": "foam_classes.responsiveness"
+     }
     },
     "plate": {
      "weight": 0.3,
@@ -495,9 +565,10 @@
     "spec": 0.2,
     "expert": 0.8
    },
+   "min_spec_input_coverage": 0.3,
    "spec_inputs": {
     "width_options": {
-     "weight": 1.0,
+     "weight": 0.7,
      "transform": "count",
      "anchors": [
       [
@@ -517,6 +588,15 @@
        9.5
       ]
      ]
+    },
+    "fit_width_tag": {
+     "weight": 0.3,
+     "table": {
+      "Standard": 5,
+      "Pied moyen": 5,
+      "Pied large": 8.5,
+      "Lâche": 7.5
+     }
     }
    }
   }
@@ -1005,7 +1085,7 @@
    }
   },
   "foot_width_boosts": {
-   "narrow": 0.3,
+   "narrow": 0.0,
    "standard": 0.0,
    "wide": 0.5,
    "extra_wide": 0.7,

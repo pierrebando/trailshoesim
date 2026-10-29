@@ -271,3 +271,15 @@ def test_empty_record_and_snippet_rule() -> None:
     }
     with pytest.raises(ValidationError, match="raw_snippet"):
         ModelSpecs.model_validate(data)
+
+
+def test_strict_brands_confirm_the_model_with_the_page_title() -> None:
+    from pipeline.reviews.common import names_model, text_tokens
+    from pipeline.specs.__main__ import _page_title
+
+    page = "<html><title>Fictional | Shop</title><h1>Ridge 3</h1></html>"
+    assert _page_title(page) == "Ridge 3"
+    unversioned = MODEL.model_copy(update={"key": "fictional|ridge|", "version": None})
+    assert not names_model(text_tokens(_page_title(page)), unversioned)  # URL ".../ridge" was v3
+    three = MODEL.model_copy(update={"key": "fictional|ridge|3", "version": "3"})
+    assert names_model(text_tokens(_page_title(page)), three)

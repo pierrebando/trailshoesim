@@ -1,6 +1,9 @@
 """scoring.yaml must be internally consistent and agree with the data model."""
 
+import json
 import math
+import re
+from pathlib import Path
 
 import pytest
 
@@ -29,8 +32,23 @@ def _check_input(name: str, spec: dict) -> None:
         _check_input(spec["fallback"]["field"], spec["fallback"])
 
 
+ROOT = Path(__file__).resolve().parents[1]
+
+
 def test_config_has_a_version() -> None:
     assert CONFIG["version"]
+
+
+def test_spec_data_and_config_carry_the_same_scoring_version() -> None:
+    # docs/scoring-spec.md says "Must match `version` in scoring.yaml"; the web app reads
+    # data/processed/scoring_config.json, which must come from the same version.
+    spec = (ROOT / "docs" / "scoring-spec.md").read_text(encoding="utf-8")
+    assert re.search(r"Version \*\*([0-9.]+)\*\*", spec).group(1) == CONFIG["version"]
+    processed = ROOT / "data" / "processed"
+    if (processed / "shoes.json").exists():
+        shoes = json.loads((processed / "shoes.json").read_text(encoding="utf-8"))
+        web_config = json.loads((processed / "scoring_config.json").read_text(encoding="utf-8"))
+        assert shoes["scoring_config_version"] == web_config["version"] == CONFIG["version"]
 
 
 def test_every_criterion_is_configured() -> None:

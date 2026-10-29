@@ -21,6 +21,7 @@ from pipeline.models import (
     RetailerTags,
     RetailOffer,
     SourcedFloat,
+    SourcedStr,
     Specs,
     SpecSource,
 )
@@ -171,6 +172,25 @@ def test_women_weight_is_used_only_as_fallback_with_its_own_anchors() -> None:
     assert women.inputs_used == ["specs.weight_women_g"]
 
 
+def test_lab_measurements_of_the_foam_replace_the_foam_class() -> None:
+    by_name = score("responsiveness", midsole_foam="PEBA")
+    measured = score("responsiveness", midsole_foam="PEBA", energy_return_forefoot_pct=55.0)
+    assert by_name.spec_score_0_10 == pytest.approx(9.5)  # foam class: no lab test
+    assert measured.spec_score_0_10 == pytest.approx(5.0)  # the measurement wins
+    assert measured.inputs_used == ["specs.energy_return_forefoot_pct"]
+    soft = score("cushioning", stack_heel_mm=30.0, midsole_softness_ac=20.0)
+    firm = score("cushioning", stack_heel_mm=30.0, midsole_softness_ac=50.0)
+    assert soft.spec_score_0_10 > firm.spec_score_0_10
+
+
+def test_the_shops_fit_class_scores_fit_width_alone_but_lightly() -> None:
+    tag_only = score("fit_width", fit_width_tag="Pied large")
+    assert tag_only.spec_score_0_10 == pytest.approx(8.5)  # most shoes' only fit input
+    both = score("fit_width", fit_width_tag="Pied large", width_options=["standard"])
+    assert both.spec_score_0_10 == pytest.approx(0.7 * 5 + 0.3 * 8.5)
+    assert score("fit_width", fit_width_tag="Taille grand").spec_score_0_10 is None  # unknown
+
+
 # --- monotonicity: a "better" spec never lowers the score ----------------------------
 
 
@@ -184,10 +204,15 @@ RUBBER = {"outsole_rubber": "Vibram Megagrip"}
         ("cushioning", "stack_heel_mm", [15.0 + i for i in range(36)], +1,
          {"stack_forefoot_mm": 24.0}),
         ("protection", "stack_forefoot_mm", [10.0 + i for i in range(30)], +1, {"plate": "none"}),
+        ("cushioning", "stack_forefoot_mm", [10.0 + i for i in range(35)], +1,
+         {"stack_heel_mm": 30.0}),
         ("stability", "stack_heel_mm", [15.0 + i for i in range(36)], -1, {}),
         ("stability", "platform_width_forefoot_mm", [90.0 + i for i in range(40)], +1,
          {"stack_heel_mm": 30.0}),
         ("lightness", "weight_g", [180.0 + 10 * i for i in range(25)], -1, {}),
+        ("cushioning", "midsole_softness_ac", [10.0 + 2 * i for i in range(35)], -1,
+         {"stack_heel_mm": 30.0}),
+        ("responsiveness", "energy_return_forefoot_pct", [40.0 + i for i in range(40)], +1, {}),
     ],
 )  # fmt: skip
 def test_monotonic(
@@ -248,8 +273,8 @@ IDENTITY_FIELDS = {
 }
 
 
-def _model_specs(manufacturer: dict, retailer: dict) -> ModelSpecs:
-    tags = RetailerTags(**_all_missing(RetailerTags))
+def _model_specs(manufacturer: dict, retailer: dict, tags: dict | None = None) -> ModelSpecs:
+    tags = RetailerTags(**_all_missing(RetailerTags, **(tags or {})))
     fallback = RetailerFallback(**_all_missing(RetailerFallback, tags=tags, **retailer))
     lab = LabFallback(**_all_missing(LabFallback))
     fields = _all_missing(ModelSpecs, lab_fallback=lab, retailer_fallback=fallback, **manufacturer)
@@ -310,6 +335,23 @@ def test_lab_weight_beats_retailer_but_stated_drop_beats_lab() -> None:
     assert resolve_specs(no_stated_drop, lab).drop_mm.value == 0.1
 
 
+def test_foam_measurements_come_from_the_lab_and_the_fit_class_from_the_shop() -> None:
+    specs = _model_specs(
+        manufacturer={}, retailer={}, tags={"fit_width": known(SourcedStr, "Pied large", "shop")}
+    )
+    lab = [_lab_review(4.0, MatchConfidence.EXACT, midsole_softness_ac=24.5,
+                       energy_return_forefoot_pct=66.0)]  # fmt: skip
+    resolved = resolve_specs(specs, lab)
+    assert (resolved.fit_width_tag.value, resolved.sources["fit_width_tag"]) == (
+        "Pied large",
+        "retailer",
+    )
+    assert resolved.midsole_softness_ac.value == 24.5
+    assert resolved.sources["energy_return_forefoot_pct"] == "lab_measurement"
+    no_lab = resolve_specs(specs, []).energy_return_forefoot_pct
+    assert no_lab.value is None and "no RunRepeat lab test" in no_lab.missing_reason
+
+
 # --- confidence (spec §8) -----------------------------------------------------------
 
 
@@ -345,7 +387,8 @@ def test_build_on_committed_data_validates_against_the_schemas() -> None:
 
     if not (INTERIM / "expert_aspects.json").exists():
         pytest.skip("interim data not built")
-    data, meta, _ = build(DAY)  # validates against schema/*.json, raises otherwise
+    # Today, never earlier than the prices of the committed data (a price age is >= 0).
+    data, meta, _ = build(dt.date.today())  # validates against schema/*.json, raises otherwise
     assert meta["shoe_count"] == len(data["shoes"]) > 0
     for shoe in data["shoes"]:
         for name, criterion in shoe["criteria_scores"].items():

@@ -21,14 +21,22 @@ const SPEC_LABEL: Record<Exclude<keyof Specs, "sources">, [string, string]> = {
   lug_spacing: ["Lug spacing", ""],
   platform_width_heel_mm: ["Platform width, heel", "mm"],
   platform_width_forefoot_mm: ["Platform width, forefoot", "mm"],
+  midsole_softness_ac: ["Midsole hardness (lower = softer)", "Asker C"],
+  energy_return_forefoot_pct: ["Energy return, forefoot", "%"],
   midsole_foam: ["Midsole foam", ""],
   plate: ["Plate", ""],
   outsole_rubber: ["Outsole rubber", ""],
   waterproof: ["Waterproof", ""],
   upper_notes: ["Upper", ""],
   width_options: ["Widths available", ""],
+  fit_width_tag: ["Fit class given by the shop (in French)", ""],
 };
-const TIER_LABEL = { manufacturer: "manufacturer", lab_measurement: "lab measurement", retailer: "retailer page" } as const;
+const TIER_LABEL = {
+  manufacturer: "manufacturer",
+  manual: "read on the product page by the student",
+  lab_measurement: "lab measurement",
+  retailer: "retailer page",
+} as const;
 
 const day = (iso: string | null) =>
   iso ? new Date(`${iso}T00:00:00Z`).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" }) : "no date";
@@ -158,7 +166,7 @@ function CriteriaSection({ shoe }: { shoe: Shoe }) {
 }
 
 function sourceWord(source: string): string {
-  return { manufacturer: "specs", lab_measurement: "lab", retailer: "retailer specs", expert_reviews: "reviews", neutral_prior: "neutral (few reviews)" }[source] ?? source;
+  return { manufacturer: "specs", manual: "specs (manual entry)", lab_measurement: "lab", retailer: "retailer specs", expert_reviews: "reviews", neutral_prior: "neutral (few reviews)" }[source] ?? source;
 }
 function inputWord(input: string): string {
   if (input === "expert_reviews") return "expert reviews";

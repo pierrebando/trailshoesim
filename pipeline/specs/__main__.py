@@ -18,6 +18,7 @@ from collections import Counter
 from pathlib import Path
 
 import yaml
+from bs4 import BeautifulSoup
 from pydantic import TypeAdapter
 
 from pipeline.models import (
@@ -29,6 +30,7 @@ from pipeline.models import (
     RetailerListing,
 )
 from pipeline.normalize.matching import split_key
+from pipeline.reviews.common import names_model, text_tokens
 from pipeline.specs.coverage import write_coverage
 from pipeline.specs.extract import Found, extract, verify
 from pipeline.specs.locate import best_candidate, find_candidates, read_sitemap, wide_candidate
@@ -85,6 +87,13 @@ def _lab_fallback() -> LabFallback:
         stack_forefoot_mm=_missing(reason),
         lug_depth_mm=_missing(reason),
     )
+
+
+def _page_title(html: str) -> str:
+    """The product name shown on the page: the first <h1>, else the <title>."""
+    soup = BeautifulSoup(html, "html.parser")
+    heading = soup.find("h1") or soup.find("title")
+    return heading.get_text(" ", strip=True) if heading else ""
 
 
 def empty_record(model: CanonicalModel, reason: str) -> ModelSpecs:
@@ -178,6 +187,14 @@ def collect_brand(brand: str, config: dict, models: list[CanonicalModel], refres
             )
             report["not_found"] += 1
             continue
+        allowed = config.get("allowed_extra_words")
+        if allowed is not None and set(choice.extra_tokens) - set(allowed):
+            # Stricter brands: "mesa-summit-men" is NOT the "Mesa"; leave it for a person.
+            extra = " ".join(sorted(set(choice.extra_tokens) - set(allowed)))
+            reason = f"loose match only ({choice.url}, extra words: {extra}); check by hand"
+            records.append(empty_record(model, reason))
+            report["loose_match_rejected"] += 1
+            continue
         url = choice.url
         if config.get("url_rewrite"):
             url = url.replace(*config["url_rewrite"])
@@ -192,6 +209,14 @@ def collect_brand(brand: str, config: dict, models: list[CanonicalModel], refres
         if response.status != 200:
             records.append(empty_record(model, f"product page answered HTTP {response.status}"))
             report["fetch_failed"] += 1
+            continue
+        title = _page_title(response.text)
+        if allowed is not None and not names_model(text_tokens(title), model):
+            # Same check as the reviews (decision 15): Topo's URL ".../mens-pursuit" has no
+            # version, but its title says "Pursuit 3", which is not our "Pursuit".
+            reason = f"page title names another model or version: {title[:60]!r}; check by hand"
+            records.append(empty_record(model, reason))
+            report["title_mismatch"] += 1
             continue
         women = bool(config.get("women_hint")) and bool(re.search(config["women_hint"], url))
         wide = wide_candidate(candidates)

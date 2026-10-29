@@ -7,7 +7,11 @@ Method (see docs/sources.md): server-rendered HTML + schema.org JSON-LD.
   and a "Caractéristiques" list (gender, width, drop range...).
 
 The "load more" button of category pages calls an internal search backend that we
-deliberately do not use, so we widen coverage with one brand x trail page per brand.
+deliberately do not use. Coverage comes from two server-rendered sources instead:
+* one brand x trail page per brand, the brands being read from the store's brand links
+  (homepage and the brand menu of every category page);
+* the links to other trail shoes that every product page shows ("you may also like",
+  other colours), followed until no new product appears.
 """
 
 import datetime as dt
@@ -15,6 +19,7 @@ import json
 import logging
 import re
 from collections import deque
+from collections.abc import Callable
 from dataclasses import dataclass
 
 from bs4 import BeautifulSoup
@@ -98,9 +103,28 @@ def parse_listing_cards(html: str) -> list[ListingCard]:
 
 
 def parse_brand_ids(html: str) -> dict[str, str]:
-    """Return {brand_id: brand_slug} from brand links such as /runnerinn/fr/salomon/179/m."""
-    links = re.findall(r'href="/runnerinn/fr/([a-z0-9\-]+)/(\d+)/m"', html)
+    """Return {brand_id: brand_slug} from brand links such as /runnerinn/fr/salomon/179/m.
+
+    Both quote styles: the brand menu of category pages writes href='...' (60 brands),
+    the homepage href="..." (14 brands); reading only the latter missed Hoka, Nike, On...
+    """
+    links = re.findall(r"""href=['"]/runnerinn/fr/([a-z0-9\-]+)/(\d+)/m['"]""", html)
     return {brand_id: slug for slug, brand_id in links}
+
+
+# Tradeinn names every trail-shoe product URL "...chaussures-de-trail-running-...".
+TRAIL_PRODUCT_LINK = re.compile(
+    r"""href=['"]((?:https://www\.tradeinn\.com)?/runnerinn/fr/"""
+    r"""[^'"/]*chaussures-de-trail-running[^'"/]*/\d+/p)['"]"""
+)
+
+
+def parse_trail_product_links(html: str) -> list[str]:
+    """Absolute URLs of the trail-shoe product pages linked from a page, in page order."""
+    urls = [
+        m if m.startswith("http") else f"{BASE_URL}{m}" for m in TRAIL_PRODUCT_LINK.findall(html)
+    ]
+    return list(dict.fromkeys(urls))
 
 
 def brand_trail_url(slug: str, brand_id: str) -> str:
@@ -294,8 +318,10 @@ def collect(client: PoliteClient, limit: int | None = None) -> CollectResult:
     result = CollectResult()
     category_queue: deque[str] = deque([TRAIL_CATEGORY_URL])
     queued_categories = {TRAIL_CATEGORY_URL}
-    product_queue: deque[ListingCard] = deque()
-    cards_by_url: dict[str, ListingCard] = {}
+    # (url, card): the card is None for products found through links on product pages
+    # (their title then comes from the page's own JSON-LD, which repeats the card title).
+    product_queue: deque[tuple[str, ListingCard | None]] = deque()
+    cards_by_url: dict[str, ListingCard | None] = {}
 
     def queue_brand(slug: str, brand_id: str) -> None:
         url = brand_trail_url(slug, brand_id)
@@ -311,27 +337,31 @@ def collect(client: PoliteClient, limit: int | None = None) -> CollectResult:
     while category_queue or product_queue:
         if category_queue:
             _read_category_page(
-                client, category_queue.popleft(), result, cards_by_url, product_queue
+                client, category_queue.popleft(), result, cards_by_url, product_queue, queue_brand
             )
             continue
         if limit is not None and len(result.listings) + len(result.failures) >= limit:
             break
-        card = product_queue.popleft()
-        page = _safe_get(client, card.url, result)
+        url, card = product_queue.popleft()
+        page = _safe_get(client, url, result)
         if page is None:
             continue
         try:
-            listing = parse_product_page(page.text, card.url, page.retrieved_at, card)
+            listing = parse_product_page(page.text, url, page.retrieved_at, card)
         except Exception as error:  # one bad page must not stop the crawl
-            result.failures.append({"url": card.url, "error": f"parse: {error}"})
+            result.failures.append({"url": url, "error": f"parse: {error}"})
             continue
         if not is_trail_breadcrumb(listing.category_breadcrumb):
-            result.excluded_not_trail.append(card.url)
+            result.excluded_not_trail.append(url)
             continue
         result.listings.append(listing)
         brand_link = parse_brand_trail_link(page.text)
         if brand_link:
             queue_brand(*brand_link)
+        for linked in parse_trail_product_links(page.text):
+            if linked not in cards_by_url:
+                cards_by_url[linked] = None
+                product_queue.append((linked, None))
 
     log.info(
         "tradeinn: %d listings, %d failures, %d category pages (%d possibly truncated)",
@@ -361,18 +391,21 @@ def _read_category_page(
     client: PoliteClient,
     url: str,
     result: CollectResult,
-    cards_by_url: dict[str, ListingCard],
-    product_queue: deque[ListingCard],
+    cards_by_url: dict[str, ListingCard | None],
+    product_queue: deque[tuple[str, ListingCard | None]],
+    queue_brand: Callable[[str, str], None],
 ) -> None:
     page = _safe_get(client, url, result)
     if page is None:
         return
     result.category_pages += 1
+    for brand_id, slug in parse_brand_ids(page.text).items():  # the brand menu
+        queue_brand(slug, brand_id)
     cards = parse_listing_cards(page.text)
     if len(cards) >= MAX_CARDS_PER_PAGE:
         result.truncated_pages.append(url)
     new_cards = [card for card in cards if card.url not in cards_by_url]
     for card in new_cards:
         cards_by_url[card.url] = card
-        product_queue.append(card)
+        product_queue.append((card.url, card))
     log.info("%s: %d cards, %d new", url, len(cards), len(new_cards))

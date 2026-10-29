@@ -1,7 +1,10 @@
 """RunRepeat (runrepeat.com): score, verdict, pros/cons and LAB MEASUREMENTS.
 
-Discovery: the trail catalogue `/catalog/trail-running-shoes?page=N` (the sitemap
-declared in robots.txt answers 404). Review pages are `runrepeat.com/<slug>`.
+Discovery: the catalogues `/catalog/<category>?page=N` (the sitemap declared in robots.txt
+answers 404): trail running, and since 2026-10-29 also road running and hiking, because
+the retailers' trail category includes road-to-trail, gravel and hiking-style shoes that
+RunRepeat files elsewhere. Matching stays strict (model words + exact version), so a road
+"Ride 17" never attaches to a "Ride TR 2". Review pages are `runrepeat.com/<slug>`.
 
 RunRepeat measures shoes in its own lab ("Heel stack | 31.7 mm | 33.0 mm" = this shoe |
 average). Those values are stored as the SOURCE's measurements, never as manufacturer
@@ -18,8 +21,12 @@ from pipeline.utils.http import PoliteClient
 
 SOURCE = "runrepeat"
 LANGUAGE = "en"
-CATALOGUE_URL = "https://runrepeat.com/catalog/trail-running-shoes"
-MAX_PAGES = 30
+CATALOGUE_URLS = [
+    "https://runrepeat.com/catalog/trail-running-shoes",
+    "https://runrepeat.com/catalog/running-shoes",
+    "https://runrepeat.com/catalog/hiking-shoes",
+]
+MAX_PAGES = 60  # per catalogue; the road catalogue is the longest
 NOT_SHOES = ("catalog", "footwear", "guides", "about", "partner", "data-", "media", "legal")
 
 # Lab table label -> (our key, unit). Only measurements useful to the scoring are kept.
@@ -44,16 +51,21 @@ LAB_LABELS = {
 
 
 def discover(client: PoliteClient) -> list[str]:
-    """Review URLs of every shoe listed in the trail catalogue."""
+    """Review URLs of every shoe listed in the catalogues."""
     slugs: list[str] = []
-    for page in range(1, MAX_PAGES + 1):
-        url = CATALOGUE_URL if page == 1 else f"{CATALOGUE_URL}?page={page}"
-        html = client.get(url).text
-        found = re.findall(r'href="(?:https://runrepeat\.com)?/([a-z0-9]+(?:-[a-z0-9]+)+)"', html)
-        new = [s for s in dict.fromkeys(found) if not s.startswith(NOT_SHOES) and s not in slugs]
-        slugs += new
-        if not new or f"page={page + 1}" not in html:
-            break
+    for catalogue in CATALOGUE_URLS:
+        for page in range(1, MAX_PAGES + 1):
+            url = catalogue if page == 1 else f"{catalogue}?page={page}"
+            html = client.get(url).text
+            found = re.findall(
+                r'href="(?:https://runrepeat\.com)?/([a-z0-9]+(?:-[a-z0-9]+)+)"', html
+            )
+            new = [
+                s for s in dict.fromkeys(found) if not s.startswith(NOT_SHOES) and s not in slugs
+            ]
+            slugs += new
+            if not new or f"page={page + 1}" not in html:
+                break
     return [f"https://runrepeat.com/{slug}" for slug in slugs]
 
 

@@ -1,6 +1,8 @@
 // "I like this model": shoes similar to a reference shoe (docs/scoring-spec.md §7).
 
+import { applyFilters } from "./filters";
 import { clamp, percentile } from "./math";
+import type { Filters, Profile } from "./profile";
 import { CRITERIA, TERRAINS, type ScoringConfig, type Shoe } from "./types";
 
 export type Feature =
@@ -117,4 +119,16 @@ export function findSimilar(
     similar: comparable.slice(0, config.similarity.max_results),
     notComparable: all.length - comparable.length,
   };
+}
+
+/** "I like this model" (spec §7): the hard filters apply first, then the similarity. */
+export function similarToModel(
+  reference: Shoe,
+  catalogue: Shoe[],
+  filters: Filters,
+  profile: Profile,
+  config: ScoringConfig,
+): { similar: Similarity[]; notComparable: number; hiddenByFilters: number } {
+  const passed = applyFilters(catalogue, filters, profile).passed;
+  return { ...findSimilar(reference, passed, catalogue, config), hiddenByFilters: catalogue.length - passed.length };
 }

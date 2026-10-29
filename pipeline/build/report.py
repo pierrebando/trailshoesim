@@ -57,8 +57,8 @@ def completeness_table(shoes: list[dict]) -> list[str]:
     """Known values per spec field, and from which tier."""
     n = len(shoes)
     lines = [
-        "| Field | Known | Manufacturer | Lab (RunRepeat) | Retailer |",
-        "|---|---|---|---|---|",
+        "| Field | Known | Manufacturer | Manual (student) | Lab (RunRepeat) | Retailer |",
+        "|---|---|---|---|---|---|",
     ]
     for field in Specs.model_fields:
         if field == "sources":
@@ -66,7 +66,7 @@ def completeness_table(shoes: list[dict]) -> list[str]:
         tiers = Counter(s["specs"]["sources"].get(field) for s in shoes)
         known = n - tiers[None]
         lines.append(
-            f"| {field} | {_pct(known, n)} | {tiers['manufacturer']} "
+            f"| {field} | {_pct(known, n)} | {tiers['manufacturer']} | {tiers['manual']} "
             f"| {tiers['lab_measurement']} | {tiers['retailer']} |"
         )
     return lines
@@ -141,6 +141,34 @@ def disagreements(shoes: list[dict]) -> list[str]:
     lines = ["| Shoe | Criterion | Spec sub-score | Expert sub-score |", "|---|---|---|---|"]
     lines += [f"| {i} | {c} | {s:.1f} | {e:.1f} |" for _, i, c, s, e in sorted(rows, reverse=True)]
     return lines if rows else ["None."]
+
+
+def price_outliers(shoes: list[dict]) -> list[str]:
+    """Offers far outside the usual price range (Tukey's rule: beyond 1.5 IQR of the quartiles).
+
+    Not errors by themselves (clearance sales, premium models), but worth a look.
+    """
+    prices = sorted(o["price_eur"] for s in shoes for o in s["retail"])
+    if len(prices) < 4:
+        return ["Not enough prices."]
+    q1, q3 = prices[len(prices) // 4], prices[(3 * len(prices)) // 4]
+    low, high = q1 - 1.5 * (q3 - q1), q3 + 1.5 * (q3 - q1)
+    rows = sorted(
+        (o["price_eur"], s["id"], o["retailer"], o["url"])
+        for s in shoes
+        for o in s["retail"]
+        if not low <= o["price_eur"] <= high
+    )
+    lines = [
+        f"All offers: {len(prices)}, from {prices[0]:.2f} to {prices[-1]:.2f} EUR; usual range "
+        f"{max(low, 0):.0f}-{high:.0f} EUR (quartiles {q1:.0f} and {q3:.0f}).",
+        "",
+    ]
+    if not rows:
+        return [*lines, "No outlier."]
+    lines += ["| Price (EUR) | Shoe | Retailer | Offer |", "|---|---|---|---|"]
+    lines += [f"| {p:.2f} | {i} | {r} | {u} |" for p, i, r, u in rows]
+    return lines
 
 
 def sanity_table(shoes: list[dict]) -> list[str]:
@@ -297,6 +325,10 @@ def write_report(data: dict, meta: dict) -> None:
         f"Criteria whose spec and expert sub-scores differ by {DISAGREEMENT:g} points or more.",
         "",
         *disagreements(shoes),
+        "",
+        "## Price outliers",
+        "",
+        *price_outliers(shoes),
         "",
         "## Sanity check: well-known shoes",
         "",

@@ -40,14 +40,16 @@ variants:
 # Glisshop model names end with short gender markers ("Xplor 2 W", "Pyrox Hybrid Ms").
 genders:
   men: ["\\bhommes?\\b", "\\bmen'?s?\\b", "\\bmens\\b", "\\bmasculin\\b", "\\bman\\b", "\\bms\\b", "\\bm's\\b", "\\bm\\b"]
-  women: ["\\bwmns?\\b", "\\bwoman\\b", "\\bws\\b", "\\bw's\\b", "\\bw\\b", "\\bfemmes?\\b", "\\bwomen'?s?\\b", "\\bwomens\\b", "\\bdames?\\b", "\\bfeminin\\b"]
+  # "wos": Mizuno's abbreviation on Glisshop ("Wave Rider TT 3 Wos" = the women's shoe).
+  women: ["\\bwos\\b", "\\bwmns?\\b", "\\bwoman\\b", "\\bws\\b", "\\bw's\\b", "\\bw\\b", "\\bfemmes?\\b", "\\bwomen'?s?\\b", "\\bwomens\\b", "\\bdames?\\b", "\\bfeminin\\b"]
   unisex: ["\\bunisexe?\\b"]
 
 # Colour words are removed only at the END of a title or after " - ", because some
 # model names contain colour words ("Mont Blanc").
 colours: [noir, blanc, bleu, rouge, vert, gris, jaune, orange, rose, violet, marron, beige,
           kaki, multicolore, black, white, blue, red, green, grey, gray, yellow, pink,
-          purple, brown, navy, khaki, multicolor, multi]
+          purple, brown, navy, khaki, multicolor, multi,
+          misty]   # "Amplux 2 Misty Blue Orange": "Misty Blue" is the colour
 # Two-word names that end with a colour word and must keep it.
 protected_phrases: ["mont blanc", "black diamond"]
 

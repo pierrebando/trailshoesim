@@ -6,7 +6,8 @@ A sub-score is a weighted mean of inputs, each turning one spec value into 0-10:
 * `lookup: <table>.<attr>`: a foam / rubber name matched to a class, or a plate type;
 * `table`: a direct mapping of a categorical value;
 * `transform: count` + `anchors`: the number of items of a list;
-* `fallback: {field, anchors}`: used only when the main field is null.
+* `fallback: {field, <rule>}`: another field with its own rule (anchors or lookup), used
+  only when the main field is null.
 
 Missing inputs are dropped and the remaining weights re-normalised; the share of weight
 that was known is the coverage. Nothing here ever replaces a missing value.
@@ -75,14 +76,15 @@ class SubScore:
 
 def evaluate_input(name: str, spec: dict, values: dict[str, Any], lookups: dict) -> InputResult:
     """Turn the spec value `values[name]` into 0-10 with the rule `spec` (one YAML input)."""
+    if values.get(name) is None and "fallback" in spec:
+        # The fallback is an input rule of its own with the same weight: the women's weight
+        # when the men's is unknown, the foam class when no lab measured the foam.
+        rule = {key: v for key, v in spec["fallback"].items() if key != "field"}
+        fallback = {**rule, "weight": spec["weight"]}
+        return evaluate_input(spec["fallback"]["field"], fallback, values, lookups)
     result = InputResult(name=f"specs.{name}", weight=float(spec["weight"]))
     value = values.get(name)
     anchors = spec.get("anchors")
-    if value is None and "fallback" in spec:
-        name = spec["fallback"]["field"]
-        value = values.get(name)
-        anchors = spec["fallback"]["anchors"]
-        result.name = f"specs.{name}"
     result.value = value
     if value is None:
         return result

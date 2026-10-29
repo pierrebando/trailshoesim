@@ -1,25 +1,34 @@
 {
- "build_date": "2026-10-28",
- "generated_at": "2026-10-29T08:07:18Z",
+ "build_date": "2026-10-29",
+ "generated_at": "2026-10-29T11:45:05Z",
  "pipeline_version": "0.1.0",
- "scoring_config_version": "0.3.1",
+ "scoring_config_version": "0.4.1",
  "aspects_config_version": "0.3.0",
- "shoe_count": 217,
- "brand_count": 25,
- "offer_count": 1194,
- "expert_review_count": 118,
+ "shoe_count": 389,
+ "brand_count": 51,
+ "offer_count": 1955,
+ "expert_review_count": 197,
  "models_dropped": {
+  "plus8000-plus8000-tigor-3": "no gender shown by any retailer listing",
   "asics-gel-nimbus-tr-28": "no gender shown by any retailer listing",
+  "cmp-altak-2": "no gender shown by any retailer listing",
   "joma-sierra-barefoot": "no gender shown by any retailer listing",
-  "joma-tundra-barefoot": "no gender shown by any retailer listing"
+  "joma-tundra-barefoot": "no gender shown by any retailer listing",
+  "kilpi-racery-low": "no gender shown by any retailer listing",
+  "kilpi-speede-low": "no gender shown by any retailer listing",
+  "mount-to-coast-m1": "no gender shown by any retailer listing",
+  "on-cloudvista-3": "no gender shown by any retailer listing",
+  "oriocx-etna-23-pro": "no gender shown by any retailer listing",
+  "salomon-pulsar": "no gender shown by any retailer listing",
+  "scarpa-spin-infinity": "no gender shown by any retailer listing"
  },
  "confidence_counts": {
-  "high": 2,
-  "medium": 45,
-  "low": 170
+  "high": 4,
+  "medium": 61,
+  "low": 324
  },
  "price_date_min": "2026-10-28",
- "price_date_max": "2026-10-28",
+ "price_date_max": "2026-10-29",
  "retailers": [
   "glisshop",
   "tradeinn"

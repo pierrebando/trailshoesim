@@ -19,7 +19,7 @@ export function HowPage({ data }: { data: AppData }) {
       <h3>1. What we know about each shoe</h3>
       <ul>
         <li><strong>Which shoes and prices</strong>: the shoes currently sold by {meta.retailers.map((r) => SOURCE_LABEL[r] ?? r).join(" and ")}, with their price, buyer rating and number of reviews.</li>
-        <li><strong>Specs</strong> (weight, stack height, drop, lug depth, foam, rubber...): from the manufacturer's page when we could read it, else measured in a lab by RunRepeat, else shown by the retailer. Every value links to its source.</li>
+        <li><strong>Specs</strong> (weight, stack height, drop, lug depth, foam, rubber...): from the manufacturer's page when we could read it, else measured in a lab by RunRepeat, else shown by the retailer. Every value links to its source. When RunRepeat measured the foam (softness, energy return), the measurement is used instead of a guess from the foam's name; the shop's own fit class ("Pied large"...) counts a little in the fit score.</li>
         <li><strong>Specialist reviews</strong> from {meta.review_sources.map((s) => SOURCE_LABEL[s] ?? s).join(", ")}: we keep a short quote and the link, never the full text.</li>
       </ul>
 

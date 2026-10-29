@@ -27,14 +27,21 @@ TIMEOUT_SECONDS = 30
 MAX_ATTEMPTS = 3
 
 
+# Placeholder until the student sets TSF_CONTACT to a real address (never hard-coded here).
+PLACEHOLDER_CONTACT = "student-contact@example.org"
+
+
 def user_agent() -> str:
-    """User-Agent identifying the project.
+    """User-Agent telling site owners who we are: a student project, and how to reach us.
 
     The contact is read from the TSF_CONTACT environment variable so that no personal
     address is hard-coded in the repository.
     """
-    contact = os.environ.get("TSF_CONTACT", "contact via the project repository")
-    return f"TrailShoeFinder/0.1 (non-commercial school project; 1 req/s; {contact})"
+    contact = os.environ.get("TSF_CONTACT", PLACEHOLDER_CONTACT)
+    return (
+        "TrailShoeFinder/0.1 (student project for a digital innovation course; "
+        f"educational, non-commercial; at most 1 request/s; contact: {contact})"
+    )
 
 
 class AccessBlockedError(RuntimeError):
