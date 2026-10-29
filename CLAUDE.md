@@ -120,7 +120,12 @@ tests/                  pytest suite
     to 1). Buyer ratings are never a criterion input (spec §2.6). The expert sub-score is
     the plain mean over reviews (spec §2.4), not the source-weighted mean of phase 5.
     Output is validated against `schema/*.schema.json`; any violation stops the build.
-    Models without a gender are dropped (listed in `meta.json`), never given a default. Not mentioned = null.
+    Models without a gender are dropped (listed in `meta.json`), never given a default.
+19. Phase 7: the web app (`web/`, React + Vite + TypeScript, no UI kit) implements spec
+    §1, §5-§7 in `web/src/engine/` (pure functions, Vitest tests) and reads the constants
+    from `data/processed/scoring_config.json`. Scoring 0.3.0 (owner's review of the example
+    rankings): in the final score an unknown weighted term counts as a neutral 5 instead of
+    being dropped. Hash routes + `base: "./"` make the static build work under any sub-path. Not mentioned = null.
 
 ## Rules
 
@@ -183,7 +188,10 @@ followed by `ln -s .venv.nosync .venv` so iCloud does not sync the virtual envir
 | 5 | Evaluate against the labels, update `docs/evaluation.md` | `python -m pipeline.nlp.evaluate --tag current` |
 | 6 | Build shoes.json, meta.json, build report | `python -m pipeline.build` |
 | all | Rebuild everything from the cache (phases 1-6) | see below |
-| 7 | Web app (local preview) | _to be added_ |
+| 7 | Web app: install (once, Node 20+) | `cd web && npm install` |
+| 7 | Web app: local preview (copies data/processed/ first) | `cd web && npm run dev` |
+| 7 | Web app: engine tests / type check / static build | `cd web && npm test`, `npm run typecheck`, `npm run build` |
+| 7 | Top 5 for three example runners | `cd web && npm run examples` |
 
 Rebuild everything, from the HTTP cache in `data/raw/` (only pages that are not cached
 are downloaded, politely) and the decisions in the `*needs_review.csv` files:
@@ -202,4 +210,4 @@ python -m pipeline.collect --site all && python -m pipeline.normalize && python 
 - [x] Phase 4 — reviews (RunRepeat, Believe in the Run, Esprit Trail)
 - [x] Phase 5 — nlp (embeddings + NLI; evaluated on 30 AI-labelled models, see `docs/evaluation.md`)
 - [ ] Phase 6 — build (shoes.json built and validated; waiting for the owner's review of the build report)
-- [ ] Phase 7 — web
+- [x] Phase 7 — web (finder, model page, "I like this model", comparator, how it works; see `docs/reports/phase-7.md`)

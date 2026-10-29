@@ -40,3 +40,5 @@ models_cache/
 
 # --- Web (phase 7) ---
 node_modules/
+# Local tool settings (preview server config of the coding assistant)
+.claude/

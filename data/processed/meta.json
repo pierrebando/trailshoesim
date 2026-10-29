@@ -1,8 +1,8 @@
 {
  "build_date": "2026-10-28",
- "generated_at": "2026-10-28T17:09:41Z",
+ "generated_at": "2026-10-29T07:47:13Z",
  "pipeline_version": "0.1.0",
- "scoring_config_version": "0.2.1",
+ "scoring_config_version": "0.3.0",
  "aspects_config_version": "0.3.0",
  "shoe_count": 217,
  "brand_count": 25,

@@ -14,7 +14,10 @@
 #   lookup:  "<table>.<attribute>" reads a value from the `lookups` section.
 #   table:   inline mapping from a categorical value to a 0-10 score.
 
-version: "0.2.1"
+version: "0.3.0"
+# 0.3.0 (phase 7 review): in the final score, a weighted term whose value is unknown
+# counts as final.missing_term_value (neutral) instead of being dropped, so a shoe can no
+# longer rank high because its weak points were never measured.
 # 0.2.1: min spec coverage 0.6 -> 0.45 (a stack, a lug depth or a rubber alone counts
 # again); protection REQUIRES the forefoot stack, so a plate alone never scores it.
 # 0.2.0 (phase 6 review): min spec coverage 0.4 -> 0.6; expert-only scores shrink towards
@@ -256,6 +259,9 @@ profile:
 final:
   buyer_share: 0.10            # share of the final score given to the buyer rating
   min_ranking_coverage: 0.6    # below this, the shoe goes to "not enough data"
+  # Value given to a weighted term that is unknown for a shoe (§6.1). 5 = neutral: missing
+  # data neither helps nor hurts compared with an average shoe.
+  missing_term_value: 5.0
 
 explanation:
   max_reasons: 3

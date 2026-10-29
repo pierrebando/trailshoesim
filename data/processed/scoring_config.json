@@ -1,5 +1,5 @@
 {
- "version": "0.2.1",
+ "version": "0.3.0",
  "common": {
   "min_spec_input_coverage": 0.45,
   "output_decimals": 2
@@ -1014,7 +1014,8 @@
  },
  "final": {
   "buyer_share": 0.1,
-  "min_ranking_coverage": 0.6
+  "min_ranking_coverage": 0.6,
+  "missing_term_value": 5.0
  },
  "explanation": {
   "max_reasons": 3,

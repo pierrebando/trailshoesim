@@ -1,6 +1,11 @@
 # Scoring specification
 
-Version **0.2.1**. Must match `version` in `pipeline/config/scoring.yaml`.
+Version **0.3.0**. Must match `version` in `pipeline/config/scoring.yaml`.
+
+Changes in 0.3.0 (phase 7 review): in the final score (§6.1), a weighted term with an
+unknown value counts as a neutral `final.missing_term_value` (5) instead of being dropped.
+Before, a max-cushion shoe with unknown responsiveness ranked first for a runner who asked
+for a dynamic shoe: its unknown weak point simply did not count.
 
 Changes in 0.2.1: minimum spec coverage 0.6 → 0.45, and a criterion may list
 `required_inputs` like terrain does (protection requires the forefoot stack).
@@ -423,11 +428,13 @@ Profile: 80 kg, 42 km, technical terrain only, heel striker, cushioning slider a
 
 ### 6.1 Formula
 
-Let `x_k` be the 0-10 score of term `k` and `A` the terms with `W_k > 0` and a known `x_k`:
+Let `x_k` be the 0-10 score of term `k`, `P` the terms with `W_k > 0`, `A ⊆ P` those
+with a known `x_k`, and `m = final.missing_term_value` (5, neutral). With
+`x̃_k = x_k` if known, else `m`:
 
 ```
-fit       = Σ_{k∈A} W_k · x_k / Σ_{k∈A} W_k                       (0-10)
-coverage  = Σ_{k∈A} W_k / Σ_{k: W_k>0} W_k
+fit       = Σ_{k∈P} W_k · x̃_k / Σ_{k∈P} W_k                      (0-10; null if A is empty)
+coverage  = Σ_{k∈A} W_k / Σ_{k∈P} W_k
 B         = interp(buyer_rating.bayesian_mean_0_5, buyer_rating.score_anchors)   (null if no reviews)
 λ         = final.buyer_share if B is known, else 0
 score     = 10 · ((1 − λ) · fit + λ · B)                          (0-100)
@@ -453,12 +460,16 @@ comes first, then higher coverage, then lower price.
 
 ### 6.5 Explanation
 
-**Breakdown (all terms).** For each `k ∈ A`:
+**Breakdown (all terms).** For each `k ∈ P`:
 
 ```
-share_k  = W_k / Σ_{k∈A} W_k
-points_k = 10 · (1 − λ) · share_k · x_k           and   points_buyer = 10 · λ · B
+share_k  = W_k / Σ_{k∈P} W_k
+points_k = 10 · (1 − λ) · share_k · x̃_k          and   points_buyer = 10 · λ · B
 ```
+
+Unknown terms are shown as "unknown, counted as 5". Why neutral rather than dropped: a
+dropped term re-normalises the others, so a shoe whose weak point is unknown ranks as if
+it had none. Why not 0: a missing measurement is not evidence of a weakness.
 
 The points add up exactly to the score, so the UI can show a stacked bar and a table
 (term, weight %, score /10, points).
@@ -470,6 +481,8 @@ The points add up exactly to the score, so the UI can show a stacked bar and a t
       or 5 if fewer than explanation.min_candidates_for_mean shoes have a value
 a_k = share_k · (x_k − μ_k)
 ```
+
+Reasons and drawbacks only use terms whose value is known (`k ∈ A`).
 
 - **Top reasons**: terms with `a_k > 0` and `x_k ≥ explanation.reason_min_score`, sorted
   by `a_k`, at most `explanation.max_reasons` (3).
@@ -568,7 +581,7 @@ on the day of viewing from `price_date` and show "prices checked on <date>".
 | `profile.terrain.*` | §5.4 |
 | `profile.foot_strike` | §5.5 |
 | `profile.foot_width_boosts` | §5.6 |
-| `final.buyer_share`, `final.min_ranking_coverage` | §6.1, §6.3 |
+| `final.buyer_share`, `final.min_ranking_coverage`, `final.missing_term_value` | §6.1, §6.3 |
 | `explanation.*` | §6.5 |
 | `similarity.*` | §7 |
 | `confidence.*` | §8 |
