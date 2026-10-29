@@ -294,6 +294,22 @@ def test_source_priority_and_missing_reasons() -> None:
     assert "no RunRepeat lab test" in no_lab.stack_heel_mm.missing_reason
 
 
+def test_lab_weight_beats_retailer_but_stated_drop_beats_lab() -> None:
+    specs = _model_specs(
+        manufacturer={},
+        retailer={
+            "weight_g": known(SourcedFloat, 260.0, "shop"),
+            "drop_mm": known(SourcedFloat, 8.0, "shop"),
+        },
+    )
+    lab = [_lab_review(4.0, MatchConfidence.EXACT, weight_g=323.0, drop_mm=0.1)]
+    resolved = resolve_specs(specs, lab)
+    assert (resolved.weight_g.value, resolved.sources["weight_g"]) == (323.0, "lab_measurement")
+    assert (resolved.drop_mm.value, resolved.sources["drop_mm"]) == (8.0, "retailer")
+    no_stated_drop = _model_specs(manufacturer={}, retailer={})
+    assert resolve_specs(no_stated_drop, lab).drop_mm.value == 0.1
+
+
 # --- confidence (spec §8) -----------------------------------------------------------
 
 

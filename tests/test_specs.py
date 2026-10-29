@@ -179,6 +179,22 @@ def test_find_candidates_respects_versions() -> None:
     assert find_candidates("peregrine", "14", PAGES, r"\.html$") == []
 
 
+def test_find_candidates_decodes_urls_and_knows_synonyms() -> None:
+    pages = {
+        "https://x.com/fr/pd/trail-voyage-nitro%C2%A04-homme/311041": "s",  # non-breaking space
+        "https://x.com/FR/agility-trail/60972M.html": "s",
+        "https://x.com/products/golden-gate-2-all-terrain-shoe-33085-351-10": "s",
+        "https://x.com/FR/agility-trail-trek/60974U.html": "s",
+    }
+    assert [c.url for c in find_candidates("voyage nitro", "4", pages, "pd")] == [
+        "https://x.com/fr/pd/trail-voyage-nitro%C2%A04-homme/311041"
+    ]
+    assert find_candidates("voyage nitro", "3", pages, "pd") == []  # versions stay strict
+    agility = find_candidates("agility tr", None, pages, r"\.html$")  # retailer's "TR"
+    assert best_candidate(agility, None, None).url.endswith("/agility-trail/60972M.html")
+    assert len(find_candidates("golden gate 2 atr", None, pages, "products")) == 1
+
+
 def test_best_candidate_prefers_base_model_and_mens_page() -> None:
     candidates = find_candidates("peregrine", "16", PAGES, r"\.html$")
     best = best_candidate(candidates, r"M\.html$", r"W\.html$")

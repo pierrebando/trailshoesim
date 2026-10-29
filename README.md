@@ -67,7 +67,7 @@ flowchart LR
 Full specification: [docs/scoring-spec.md](docs/scoring-spec.md); every constant is in
 [pipeline/config/scoring.yaml](pipeline/config/scoring.yaml).
 
-1. Each spec field is taken from the manufacturer, else a lab measurement, else the retailer; its source is kept.
+1. Each spec field is taken from the manufacturer, else a lab measurement (RunRepeat), else the retailer (for the drop, stated values come before the lab); its source is kept.
 2. Each criterion blends a **spec score** (e.g. more stack height means more cushioning, deeper lugs mean more grip) with an **expert score** from the reviews.
 3. The expert part grows with the number of reviews; one review only moves a score a little.
 4. Terrain scores (mud, rock, groomed trails...) use specs only, mainly lug depth.
@@ -99,7 +99,7 @@ Details: [docs/methodology-nlp.md](docs/methodology-nlp.md) and
 - **Heuristics, not science.** The rules are reasonable rules of thumb from the running world, transparent and tunable, but not validated biomechanics.
 - **Prices are snapshots**, read on the build date (shown in the footer). Always check the retailer page.
 - **Partial coverage**:
-  - only 45 of 220 models have a manufacturer page we could read;
+  - only 49 of 220 models have a manufacturer page we could read;
   - 81 have an expert review;
   - for a typical profile about 140 of the 217 shoes have too little data to be ranked;
   - widths are known for 4 shoes and waterproofing for 16, so these filters hide most shoes.

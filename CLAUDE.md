@@ -113,7 +113,8 @@ tests/                  pytest suite
     assistant at the owner's request, 5 rows checked by the owner, column `labelled_by`).
 18. Phase 6 implements `docs/scoring-spec.md` §2-4 and §8 literally, constants from
     `scoring.yaml`. Each spec field comes from manufacturer > lab measurement (RunRepeat:
-    stacks, lug depth, platform widths) > retailer; `Specs.sources` says which. Scoring
+    stacks, lug depth, platform widths, weight, drop) > retailer, except the drop:
+    stated values (manufacturer > retailer) before the lab; `Specs.sources` says which. Scoring
     0.2.x (owner's decisions after the phase 6 review): min spec coverage 0.45,
     protection requires the forefoot stack, expert-only scores shrink towards a neutral 5
     with few reviews, evidenced foam rules only. Every criterion and

@@ -55,3 +55,36 @@ that block bots, ban AI crawlers or forbid extraction stay uncollected.
    be ranked for a typical profile.
 4. The engine is tested; the React pages are checked by hand in a browser, not by
    automated UI tests.
+
+## More data within the rules (2026-10-29, branch `more-data`)
+
+The owner asked for more data. Sites that refused automated access stay uncollected; two
+sources we were already allowed to use were exploited further.
+
+1. **RunRepeat lab weight and drop** (already collected in phase 4, previously unused).
+   Weight: lab before retailer, as decision 14 says. On the 25 shoes with both, the median
+   difference is 8 g; where they disagree the lab is more credible (La Sportiva Mutant:
+   retailer 260 g, lab 323 g; reviewers call it "unquestionably heavy"). Drop: **stated
+   values first** (manufacturer, retailer), lab only when nobody states one, because a
+   measured drop can be far from the designed drop runners filter on (Agravic Speed
+   Ultra 2: 0.1 mm measured, 8 mm stated). Scoring 0.3.1.
+2. **Sitemap matching** for the 20 models of readable brand sites that were not found:
+   URLs are now percent-decoded (Puma hides a non-breaking space: `nitro%C2%A04`), and
+   two synonyms are applied to both sides ("TR" = "trail", "ATR" = "all terrain"). New
+   pages: Merrell Agility Trail, Puma Voyage Nitro 4, Puma Fast-Trac Nitro 4, Scarpa
+   Golden Gate 2 ATR (45 -> 49 models with a manufacturer page); Puma Pounce Lite 2 now
+   uses its base page instead of the PTX (waterproof) variant. The other 16 are really
+   absent from the brands' sitemaps (older versions such as Peregrine 13/15, lifestyle
+   models such as Mizuno MXR) or are catalogue duplicates ("Wave Rider TT 3 Wos",
+   "Amplux 2 Misty": phase 2 should merge them).
+
+| Field known (of 217 shoes) | Before | After |
+|---|---|---|
+| Weight (men's) | 75 | 97 |
+| Drop | 114 | 126 |
+| Stack heights | 57 | 58 |
+| Lug depth | 85 | 86 |
+| Midsole foam | 117 | 119 |
+
+Confidence: low 174 -> 170, medium 41 -> 45, high 2. Criterion scores barely move
+(lightness 126 -> 127, stability 78 -> 79): most of these shoes already had a women's weight.

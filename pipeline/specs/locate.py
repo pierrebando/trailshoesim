@@ -9,6 +9,7 @@ them, if it is a version, must be the model's version. So "Peregrine 15" does no
 import re
 import xml.etree.ElementTree as ET
 from dataclasses import dataclass
+from urllib.parse import unquote
 
 from pipeline.normalize.brands import fold
 from pipeline.normalize.titles import GLUED_VERSION_RE, version_value
@@ -18,6 +19,29 @@ NAMESPACE = "{http://www.sitemaps.org/schemas/sitemap/0.9}"
 # Words that make a URL a variant of the base model: prefer the URL without them.
 VARIANT_TOKENS = {"gtx", "gore", "tex", "wide", "large", "larges", "mid", "wp", "boa", "ltr"}
 WIDE_TOKENS = {"wide", "large", "larges", "2e", "4e"}
+# Same word written two ways by retailers (our model keys) and brands (their URLs).
+# Applied to BOTH sides, so it can only add matches between equivalent names:
+#   "Agility TR" (retailer) = "agility-trail" (Merrell);
+#   "Golden Gate 2 ATR" (retailer) = "golden-gate-2-all-terrain-..." (Scarpa).
+TOKEN_SYNONYMS = {"trail": ["tr"], "all terrain": ["atr"]}
+
+
+def canonical_tokens(tokens: list[str]) -> list[str]:
+    """Replace the synonyms of TOKEN_SYNONYMS (one or two words) by their short form."""
+    result: list[str] = []
+    i = 0
+    while i < len(tokens):
+        pair = " ".join(tokens[i : i + 2])
+        if pair in TOKEN_SYNONYMS:
+            result += TOKEN_SYNONYMS[pair]
+            i += 2
+        elif tokens[i] in TOKEN_SYNONYMS:
+            result += TOKEN_SYNONYMS[tokens[i]]
+            i += 1
+        else:
+            result.append(tokens[i])
+            i += 1
+    return result
 
 
 @dataclass(frozen=True)
@@ -47,7 +71,8 @@ def slug_tokens(url: str, last_segment_only: bool = False) -> list[str]:
 
     `last_segment_only` ignores folders: NNormal files a "Kboix" page under ".../tomir/".
     """
-    path = re.sub(r"^https?://[^/]+", "", url)
+    # Decode first: Puma writes "voyage-nitro%C2%A04" (a non-breaking space before the 4).
+    path = unquote(re.sub(r"^https?://[^/]+", "", url))
     if last_segment_only:
         path = path.rstrip("/").rsplit("/", 1)[-1]
     tokens = []
@@ -94,12 +119,14 @@ def find_candidates(
     last_segment_only: bool = False,
 ) -> list[Candidate]:
     """Product URLs of the sitemap that match this model."""
-    model_tokens = [fold(t) for t in re.split(r"[^a-z0-9]+", fold(model_key)) if t]
+    model_tokens = canonical_tokens(
+        [fold(t) for t in re.split(r"[^a-z0-9]+", fold(model_key)) if t]
+    )
     candidates = []
     for url, sitemap_url in pages.items():
         if not re.search(product_url, url):
             continue
-        left = _match(model_tokens, version, slug_tokens(url, last_segment_only))
+        left = _match(model_tokens, version, canonical_tokens(slug_tokens(url, last_segment_only)))
         if left is not None:
             candidates.append(Candidate(url, sitemap_url, tuple(left)))
     return candidates

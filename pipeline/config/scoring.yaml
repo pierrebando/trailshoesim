@@ -14,7 +14,9 @@
 #   lookup:  "<table>.<attribute>" reads a value from the `lookups` section.
 #   table:   inline mapping from a categorical value to a 0-10 score.
 
-version: "0.3.0"
+version: "0.3.1"
+# 0.3.1: RunRepeat lab weight and drop are used as spec sources (weight: lab before
+# retailer; drop: stated values first, lab only when nobody states one).
 # 0.3.0 (phase 7 review): in the final score, a weighted term whose value is unknown
 # counts as final.missing_term_value (neutral) instead of being dropped, so a shoe can no
 # longer rank high because its weak points were never measured.

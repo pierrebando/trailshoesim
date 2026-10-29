@@ -1,9 +1,14 @@
 """Pick one value per spec field: manufacturer > lab measurement > retailer (decision 14).
 
 * manufacturer: data/interim/specs.json (phase 3), every value quoting the brand's page;
-* lab measurement: values MEASURED by a review source (RunRepeat, phase 4), used for the
-  stack heights, the lug depth and (since scoring 0.2.0) the platform widths;
+* lab measurement: values MEASURED by a review source (RunRepeat, phase 4): stack
+  heights, lug depth, platform widths (scoring 0.2.0), weight and drop (scoring 0.3.1);
 * retailer: what Tradeinn / Glisshop show (phase 3b), lower confidence.
+
+One exception to the order: for the DROP, a stated value (manufacturer, then retailer)
+beats the lab. A measured drop depends on where the lab measures the stacks and can be
+far from the drop the brand designs and runners filter on (0.1 mm measured vs 8 mm stated
+for one shoe), so the lab only fills a drop that nobody states.
 
 The chosen value keeps its own provenance (source name, URL, date, snippet) and
 `Specs.sources` records which tier it came from. When no tier knows a value, the field is
@@ -28,7 +33,12 @@ LAB_FIELDS = {
     "lug_depth_mm": "lug_depth_mm",
     "platform_width_heel_mm": "midsole_width_heel_mm",
     "platform_width_forefoot_mm": "midsole_width_forefoot_mm",
+    # RunRepeat weighs one men's shoe, like our weight_g (men's reference size).
+    "weight_g": "weight_g",
+    "drop_mm": "drop_mm",
 }
+DEFAULT_ORDER = [SpecSource.MANUFACTURER, SpecSource.LAB_MEASUREMENT, SpecSource.RETAILER]
+TIER_ORDER = {"drop_mm": [SpecSource.MANUFACTURER, SpecSource.RETAILER, SpecSource.LAB_MEASUREMENT]}
 LAB_SOURCE = "runrepeat"
 # An exact review is a better proxy for the standard model than one of a variant (GTX...).
 MATCH_ORDER = [MatchConfidence.EXACT, MatchConfidence.MANUAL, MatchConfidence.VARIANT]
@@ -87,6 +97,8 @@ def resolve_specs(specs: ModelSpecs, reviews: list[CollectedReview]) -> Specs:
             value = getattr(retailer, name) if retailer else None
             reason = value.missing_reason if value else "retailer fallback not built"
             tiers.append((SpecSource.RETAILER, value, reason or ""))
+        order = TIER_ORDER.get(name, DEFAULT_ORDER)
+        tiers.sort(key=lambda t: order.index(t[0]))
         for tier, value, _ in tiers:
             if value is not None and value.value is not None:
                 resolved[name] = target.model_validate(value.model_dump())

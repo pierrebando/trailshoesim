@@ -1,8 +1,8 @@
 {
  "build_date": "2026-10-28",
- "generated_at": "2026-10-29T07:57:32Z",
+ "generated_at": "2026-10-29T08:07:18Z",
  "pipeline_version": "0.1.0",
- "scoring_config_version": "0.3.0",
+ "scoring_config_version": "0.3.1",
  "aspects_config_version": "0.3.0",
  "shoe_count": 217,
  "brand_count": 25,
@@ -15,8 +15,8 @@
  },
  "confidence_counts": {
   "high": 2,
-  "medium": 41,
-  "low": 174
+  "medium": 45,
+  "low": 170
  },
  "price_date_min": "2026-10-28",
  "price_date_max": "2026-10-28",

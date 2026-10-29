@@ -1,6 +1,8 @@
 # Scoring specification
 
-Version **0.3.0**. Must match `version` in `pipeline/config/scoring.yaml`.
+Version **0.3.1**. Must match `version` in `pipeline/config/scoring.yaml`.
+
+Changes in 0.3.1: RunRepeat's lab weight and drop become spec sources (§2.2).
 
 Changes in 0.3.0 (phase 7 review): in the final score (§6.1), a weighted term with an
 unknown value counts as a neutral `final.missing_term_value` (5) instead of being dropped.
@@ -173,7 +175,10 @@ Notes:
   review source's lab measurement when there is one (RunRepeat "midsole width", heel and
   forefoot); otherwise they are null and stability falls back on stack height.
 - **Source priority.** Each spec field takes the manufacturer value, else a lab
-  measurement (stack heights, lug depth, platform widths), else the retailer's value.
+  measurement (stack heights, lug depth, platform widths, weight, drop), else the
+  retailer's value. **Exception: the drop** takes stated values first (manufacturer, then
+  retailer) and the lab measurement only when nobody states one, because a measured drop
+  can differ a lot from the designed drop that runners filter on.
 
 ### 2.3 Spec sub-score
 
