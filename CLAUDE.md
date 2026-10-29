@@ -86,7 +86,8 @@ tests/                  pytest suite
 14. Manufacturer specs (phase 3) quote the page: every known value has a `raw_snippet`
     (max 30 words, verbatim) and is rejected if the snippet or value is not in the page
     text. Conversions are labelled with `derivation`. Lab measurements from review sites
-    go to the separate `lab_fallback` slot (phase 4/6), never into the manufacturer fields.
+    stay with their review (`CollectedReview.lab_values`, phase 4) and are used by phase 6
+    as the second tier, never written into the manufacturer fields.
     Specs shown by the retailers (Tradeinn/Glisshop) go to the separate `retailer_fallback`
     slot (phase 3b): exact numbers only (filter buckets such as "5-8 mm" stay text ranges),
     weight from men's standard-version listings, null when listings disagree, every
@@ -192,6 +193,7 @@ followed by `ln -s .venv.nosync .venv` so iCloud does not sync the virtual envir
 | 7 | Web app: local preview (copies data/processed/ first) | `cd web && npm run dev` |
 | 7 | Web app: engine tests / type check / static build | `cd web && npm test`, `npm run typecheck`, `npm run build` |
 | 7 | Top 5 for three example runners | `cd web && npm run examples` |
+| 8 | Deploy | automatic on push to `main` (`.github/workflows/deploy.yml`); data refresh: see README.md |
 
 Rebuild everything, from the HTTP cache in `data/raw/` (only pages that are not cached
 are downloaded, politely) and the decisions in the `*needs_review.csv` files:
@@ -211,3 +213,4 @@ python -m pipeline.collect --site all && python -m pipeline.normalize && python 
 - [x] Phase 5 — nlp (embeddings + NLI; evaluated on 30 AI-labelled models, see `docs/evaluation.md`)
 - [ ] Phase 6 — build (shoes.json built and validated; waiting for the owner's review of the build report)
 - [x] Phase 7 — web (finder, model page, "I like this model", comparator, how it works; see `docs/reports/phase-7.md`)
+- [x] Phase 8 — deployment and documentation (workflow, README, audit; owner publishes as a school project, see `docs/reports/phase-8.md`)

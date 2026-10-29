@@ -18,6 +18,8 @@ from pipeline.models import Criterion, Specs, TerrainScores
 
 ROOT = Path(__file__).resolve().parents[2]
 REPORT_PATH = ROOT / "data" / "processed" / "build_report.md"
+COVERAGE_PATH = ROOT / "docs" / "data-coverage.md"
+COVERAGE_START, COVERAGE_END = "<!-- build:start -->", "<!-- build:end -->"
 IMG_DIR = ROOT / "docs" / "img"
 PLOT_NAME = "criteria_distribution.png"
 CRITERIA = [c.value for c in Criterion]
@@ -203,6 +205,34 @@ def plot_distributions(shoes: list[dict], path: Path) -> None:
     plt.close(fig)
 
 
+def write_coverage_block(shoes: list[dict], meta: dict) -> None:
+    """Insert or replace the final-coverage block of docs/data-coverage.md."""
+    block = "\n".join([
+        COVERAGE_START,
+        "",
+        "## Final coverage in data/processed/shoes.json (phase 6)",
+        "",
+        f"Generated {meta['build_date']} by `python -m pipeline.build` (scoring "
+        f"{meta['scoring_config_version']}): {len(shoes)} shoes. Each spec field takes the "
+        "manufacturer value, else a lab measurement (RunRepeat), else the retailer's.",
+        "",
+        *completeness_table(shoes),
+        "",
+        *criteria_table(shoes),
+        "",
+        *terrain_table(shoes),
+        "",
+        COVERAGE_END,
+    ])  # fmt: skip
+    text = COVERAGE_PATH.read_text(encoding="utf-8") if COVERAGE_PATH.exists() else ""
+    start, end = text.find(COVERAGE_START), text.find(COVERAGE_END)
+    if start >= 0 and end > start:
+        text = text[:start] + block + text[end + len(COVERAGE_END) :]
+    else:
+        text = text.rstrip() + "\n\n" + block + "\n"
+    COVERAGE_PATH.write_text(text, encoding="utf-8")
+
+
 def write_report(data: dict, meta: dict) -> None:
     """Write the build report and its plot."""
     shoes = data["shoes"]
@@ -277,3 +307,4 @@ def write_report(data: dict, meta: dict) -> None:
         "",
     ]
     REPORT_PATH.write_text("\n".join(lines), encoding="utf-8")
+    write_coverage_block(shoes, meta)

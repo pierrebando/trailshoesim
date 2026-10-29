@@ -65,7 +65,12 @@ def write_coverage(specs: InterimSpecs, fields: list[str], path: Path) -> None:
     with_page = [r for r in records if r.manufacturer_url]
 
     lines = [
-        "# Data coverage — manufacturer specs (phase 3)",
+        "# Data coverage",
+        "",
+        "Manufacturer specs (phase 3) first, then expert reviews (phase 4) and the final "
+        "coverage of `data/processed/shoes.json` (phase 6) at the end.",
+        "",
+        "## Manufacturer specs (phase 3)",
         "",
         f"Generated {specs.generated_at:%Y-%m-%d} from `data/interim/specs.json` "
         "(`python -m pipeline.specs`).",
@@ -126,9 +131,11 @@ def write_coverage(specs: InterimSpecs, fields: list[str], path: Path) -> None:
     ]
     for record in thin:
         lines.append(f"| `{record.model_id}` | {missing(record)} | {record.manufacturer_url} |")
-    # Keep the "Expert reviews" block written by phase 4 (pipeline/reviews).
+    # Keep the blocks written by later phases: "reviews" (phase 4) and "build" (phase 6).
     previous = path.read_text(encoding="utf-8") if path.exists() else ""
-    start, end = previous.find("<!-- reviews:start -->"), previous.find("<!-- reviews:end -->")
-    if start >= 0 and end > start:
-        lines += ["", previous[start : end + len("<!-- reviews:end -->")]]
+    for name in ("reviews", "build"):
+        start_mark, end_mark = f"<!-- {name}:start -->", f"<!-- {name}:end -->"
+        start, end = previous.find(start_mark), previous.find(end_mark)
+        if start >= 0 and end > start:
+            lines += ["", previous[start : end + len(end_mark)]]
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")

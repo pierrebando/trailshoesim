@@ -1,4 +1,8 @@
-# Data coverage — manufacturer specs (phase 3)
+# Data coverage
+
+Manufacturer specs (phase 3) first, then expert reviews (phase 4) and the final coverage of `data/processed/shoes.json` (phase 6) at the end.
+
+## Manufacturer specs (phase 3)
 
 Generated 2026-10-28 from `data/interim/specs.json` (`python -m pipeline.specs`).
 
@@ -152,3 +156,48 @@ Generated 2026-10-28 from `data/interim/expert_reviews.json` (`python -m pipelin
 Reviews with lab measurements: 47.
 
 <!-- reviews:end -->
+
+<!-- build:start -->
+
+## Final coverage in data/processed/shoes.json (phase 6)
+
+Generated 2026-10-28 by `python -m pipeline.build` (scoring 0.3.0): 217 shoes. Each spec field takes the manufacturer value, else a lab measurement (RunRepeat), else the retailer's.
+
+| Field | Known | Manufacturer | Lab (RunRepeat) | Retailer |
+|---|---|---|---|---|
+| weight_g | 75 (35%) | 25 | 0 | 50 |
+| weight_women_g | 61 (28%) | 3 | 0 | 58 |
+| stack_heel_mm | 57 (26%) | 16 | 41 | 0 |
+| stack_forefoot_mm | 57 (26%) | 16 | 41 | 0 |
+| drop_mm | 114 (53%) | 24 | 0 | 90 |
+| lug_depth_mm | 85 (39%) | 17 | 42 | 26 |
+| lug_spacing | 0 (0%) | 0 | 0 | 0 |
+| platform_width_heel_mm | 45 (21%) | 0 | 45 | 0 |
+| platform_width_forefoot_mm | 45 (21%) | 0 | 45 | 0 |
+| midsole_foam | 117 (54%) | 26 | 0 | 91 |
+| plate | 36 (17%) | 3 | 0 | 33 |
+| outsole_rubber | 154 (71%) | 26 | 0 | 128 |
+| waterproof | 16 (7%) | 0 | 0 | 16 |
+| upper_notes | 29 (13%) | 29 | 0 | 0 |
+| width_options | 4 (2%) | 4 | 0 | 0 |
+
+| Criterion | Scored | Specs only | Reviews only | Both | Median |
+|---|---|---|---|---|---|
+| cushioning | 82 (38%) | 7 | 25 | 50 | 5.6 |
+| protection | 79 (36%) | 14 | 22 | 43 | 6.3 |
+| grip | 127 (59%) | 69 | 9 | 49 | 7.0 |
+| stability | 78 (36%) | 16 | 21 | 41 | 6.0 |
+| responsiveness | 73 (34%) | 14 | 52 | 7 | 6.0 |
+| lightness | 126 (58%) | 53 | 27 | 46 | 5.8 |
+| durability | 105 (48%) | 43 | 33 | 29 | 6.7 |
+| fit_width | 74 (34%) | 2 | 70 | 2 | 5.0 |
+
+| Terrain | Scored |
+|---|---|
+| road_to_trail | 85 (39%) |
+| groomed_mixed | 85 (39%) |
+| technical_rocky | 71 (33%) |
+| muddy_soft | 85 (39%) |
+| wet_roots | 39 (18%) |
+
+<!-- build:end -->
